@@ -52,3 +52,4 @@
 
 (package! flycheck-joker)
 (package! highlight-symbol)
+(package! tagedit)

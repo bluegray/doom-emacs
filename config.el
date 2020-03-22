@@ -53,44 +53,94 @@
 ;; they are implemented.
 
 
-;; Custom
+;; Custom doom configuration
 
+(add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 
-(use-package doom-themes
+(use-package! doom-themes
   :config
-  ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-vibrant t)
-
-  ;; Enable flashing mode-line on errors
+  ;;(load-theme 'doom-city-lights t)
+  ;;(load-theme 'doom-nord t)
+  ;;(load-theme 'doom-spacegrey t)
+  ;;(load-theme 'doom-tomorrow-night t)
+  ;;(load-theme 'bluegray t)
+  (load-theme 'bluegray-city t)
   (doom-themes-visual-bell-config)
-
-  ;; or for treemacs users
   (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
   (doom-themes-treemacs-config)
-
-  ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
 
+;; Global keybinds
+
 (cua-mode t)
+
+(map! "C-S-t"         #'treemacs
+      "<f2>"          #'highlight-symbol-at-point
+      "<f3>"          #'highlight-symbol-next
+      "C-M-q"         #'clojure-align
+      "C-<up>"        #'+fold/toggle
+      "C-<down>"      #'+fold/open-all
+      "C-S-M-<up>"    #'+fold/close-all
+      "C-c C-<right>" #'tagedit-forward-slurp-tag
+      "C-c C-<left>"  #'tagedit-forward-barf-tag)
+
+
+;; Smartparens
+
 (add-hook 'emacs-lisp-mode-hook #'smartparens-strict-mode)
 (add-hook 'clojure-mode-hook #'smartparens-strict-mode)
-
+(add-hook 'scss-mode-hook #'smartparens-strict-mode)
 (map! :after smartparens
       :map   smartparens-mode-map
       "C-<right>" #'sp-forward-slurp-sexp
       "C-<left>"  #'sp-forward-barf-sexp)
 
-(map! "C-S-t"        #'treemacs
-      "<f2>"         #'highlight-symbol-at-point
-      "<f3>"         #'highlight-symbol-next
-      "C-M-q"        #'clojure-align
-      "C-<up>"       #'+fold/toggle
-      "C-<down>"     #'+fold/open-all
-      "C-S-M-<up>"   #'+fold/close-all)
 
+;; Cider
+
+(defun new-cider-local-repl  () (interactive) (cider-connect '(:host "localhost"  :port 9991)))
+(defun new-cider-tunnel-repl () (interactive) (cider-connect '(:host "localhost"  :port 7888)))
+(map! "<f9>"       #'new-cider-local-repl)
+(map! "S-C-M-<f9>" #'new-cider-tunnel-repl)
+(map! "<f10>"      #'cider-connect-clj&cljs)
+(map! "C-S-<f9>"   #'cider-quit)
+
+
+;; Misc editor keybinds
+
+(defun indent-buffer ()
+  (interactive)
+  (save-excursion
+    (indent-region (point-min) (point-max))))
+(map! "C-<f8>" #'indent-buffer)
+
+(defun multi-line-just-one-space (&optional n)
+  "Multi-line version of `just-one-space': Delete all spaces and tabs
+  around point, leaving one space (or N spaces). When in clojure or
+  emacs lisp mode, re-indents the s-expression."
+  (interactive "*p")
+  (let ((orig-pos (point)))
+    (skip-chars-backward " \t\n")
+    (constrain-to-field nil orig-pos)
+    (dotimes (_ (or n 1))
+      (if (= (following-char) ?\s)
+          (forward-char 1)
+        (insert ?\s)))
+    (delete-region
+     (point)
+     (progn
+       (skip-chars-forward " \t\n")
+       (constrain-to-field nil orig-pos t))))
+  (when (or (eq major-mode 'clojure-mode)
+            (eq major-mode 'emacs-lisp-mode))
+    (indent-sexp)))
+(map! "C-SPC" #'multi-line-just-one-space)
+
+
+;; Misc hooks
 
 (defun clojure-maybe-compile-and-load-file ()
   "Call function 'cider-load-buffer' for clojure files.
@@ -103,7 +153,8 @@
 (add-hook 'after-save-hook 'clojure-maybe-compile-and-load-file)
 
 
-;; clj-refactor
+;; Clojure mode
+
 (use-package! clj-refactor
   :config
   (setq cljr-favor-prefix-notation nil))
@@ -114,20 +165,6 @@
   ;; This choice of keybinding leaves cider-macroexpand-1 unbound
   (cljr-add-keybindings-with-prefix "C-c C-m"))
 (add-hook 'clojure-mode-hook #'clj-refactor-clojure-mode-hook)
-
-
-(use-package! flycheck-joker)
-(use-package! flycheck-clj-kondo)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
-  (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
-
-(dolist (checkers '((clj-kondo-clj . clojure-joker)
-                    (clj-kondo-cljs . clojurescript-joker)
-                    (clj-kondo-cljc . clojure-joker)
-                    (clj-kondo-edn . edn-joker)))
-  (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
-
 
 ;; Custom clojure indentation
 (define-clojure-indent
@@ -161,46 +198,52 @@
             (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
 
 
-(defun new-cider-local-repl  () (interactive) (cider-connect '(:host "localhost"  :port 9991)))
-(defun new-cider-tunnel-repl () (interactive) (cider-connect '(:host "localhost"  :port 7888)))
-(map! "<f9>"       #'new-cider-local-repl)
-(map! "S-C-M-<f9>" #'new-cider-tunnel-repl)
-(map! "<f10>"      #'cider-connect-clj&cljs)
-(map! "C-S-<f9>"   #'cider-quit)
+;; Flycheck
+
+(use-package! flycheck-joker)
+(use-package! flycheck-clj-kondo)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+(dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
+  (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
+
+(dolist (checkers '((clj-kondo-clj . clojure-joker)
+                    (clj-kondo-cljs . clojurescript-joker)
+                    (clj-kondo-cljc . clojure-joker)
+                    (clj-kondo-edn . edn-joker)))
+  (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
+
+(add-hook 'scss-mode-hook
+          (lambda ()
+            (setq flycheck-checker 'scss-stylelint
+                  flycheck-stylelintrc "~/.stylelintrc.json")))
 
 
-;; indent buffer
-(defun indent-buffer ()
-  (interactive)
-  (save-excursion
-    (indent-region (point-min) (point-max))))
-(map! "C-<f8>" #'indent-buffer)
-
-
-;; Collapse space
-(defun multi-line-just-one-space (&optional n)
-  "Multi-line version of `just-one-space': Delete all spaces and tabs
-  around point, leaving one space (or N spaces). When in clojure or
-  emacs lisp mode, re-indents the s-expression."
-  (interactive "*p")
-  (let ((orig-pos (point)))
-    (skip-chars-backward " \t\n")
-    (constrain-to-field nil orig-pos)
-    (dotimes (_ (or n 1))
-      (if (= (following-char) ?\s)
-          (forward-char 1)
-        (insert ?\s)))
-    (delete-region
-     (point)
-     (progn
-       (skip-chars-forward " \t\n")
-       (constrain-to-field nil orig-pos t))))
-  (when (or (eq major-mode 'clojure-mode)
-            (eq major-mode 'emacs-lisp-mode))
-    (indent-sexp)))
-(map! "C-SPC" #'multi-line-just-one-space)
+;; Misc package configuration
 
 (after! doom-modeline
   :config
-  ;;(setq doom-modeline-minor-modes t)
-  )
+  (setq doom-modeline-minor-modes nil))
+
+(after! emmet-mode
+  :config
+  (map! :map emmet-mode-keymap
+        [tab] #'+web/indent-or-yas-or-emmet-expand))
+
+(after! tagedit
+  :config
+  (tagedit-add-experimental-features))
+
+(use-package! centaur-tabs
+  :init
+  (setq centaur-tabs-set-bar 'over)
+  :config
+  (setq centaur-tabs-set-icons t
+        centaur-tabs-gray-out-icons 'buffer
+        centaur-tabs-style "bar"
+        centaur-tabs-height 32
+        centaur-tabs-set-modified-marker t
+        centaur-tabs-close-button "⨯"
+        centaur-tabs-modified-marker "⬤")
+  (centaur-tabs-group-by-projectile-project))
+(map! "C-S-M-t" #'centaur-tabs-counsel-switch-group)
