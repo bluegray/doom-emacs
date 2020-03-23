@@ -45,7 +45,7 @@ determine the exact padding."
    (base7      '("#7FA0B7" "#77AABB" "brightblack"  ))
    (base8      '("#9CAABB" "#99AABB" "white"        ))
    (fg-alt     '("#728CA0" "#7788AA" "brightwhite"  ))
-   (fg         '("#A0B3C5" "#AABBCC" "white"        ))
+   (fg         '("#bccddc" "#bbccdd" "white"        ))
 
    (grey        '("#41505E" "#ff6655" "red"          ))
    (red         '("#D95468" "#ff6655" "red"          ))
@@ -57,7 +57,7 @@ determine the exact padding."
    (bright-blue '("#539AFC" "#5599FF" "blue"         ))
    (dark-blue   '("#718CA1" "#7788AA" "blue"         ))
    (magenta     '("#E27E8D" "#EE7788" "magenta"      ))
-   (violet      '("#B62D65" "#BB2266" "brightmagenta"))
+   (violet      '("#CD7297" "#CC7799" "brightmagenta"))
    (cyan        '("#70E1E8" "#77EEEE" "brightcyan"   ))
    (dark-cyan   '("#008B94" "#008899" "cyan"   ))
 
@@ -188,6 +188,23 @@ determine the exact padding."
    ;; rjsx-mode
    (rjsx-tag :foreground dark-cyan)
    (rjsx-attr :foreground cyan :slant 'italic :weight 'medium)
+
+   ;; clojure-mode
+   (clojure-keyword-face :foreground violet)
+   (clojure-character-face :foreground teal)
+
+   ;;rainbow
+   (rainbow-delimiters-depth-1-face :foreground "#f00")
+   (rainbow-delimiters-depth-2-face :foreground "#66e")
+   (rainbow-delimiters-depth-3-face :foreground "#e66")
+   (rainbow-delimiters-depth-4-face :foreground "#6f6")
+   (rainbow-delimiters-depth-5-face :foreground "#ee6")
+   (rainbow-delimiters-depth-6-face :foreground "#6ee")
+   (rainbow-delimiters-depth-7-face :foreground "#e6e")
+   (rainbow-delimiters-depth-8-face :foreground "#ff0")
+   (rainbow-delimiters-depth-9-face :foreground "#0f0")
+   (rainbow-delimiters-unmatched-face :foreground "#FFFF00" :background violet)
+   (rainbow-delimiters-mismatched-face :foreground "#FFFF00" :background red)
    )
 
   ;; --- extra variables ---------------------
