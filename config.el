@@ -213,26 +213,20 @@
                     (clj-kondo-edn . edn-joker)))
   (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
 
-(add-hook 'scss-mode-hook
-          (lambda ()
-            (setq flycheck-checker 'scss-stylelint
-                  flycheck-stylelintrc "~/.stylelintrc.json")))
+(add-hook! scss-mode
+  (setq flycheck-checker 'scss-stylelint
+        flycheck-stylelintrc "~/.stylelintrc.json"))
 
 
 ;; Misc package configuration
 
-(after! doom-modeline
-  :config
-  (setq doom-modeline-minor-modes nil))
+(after! doom-modeline (setq doom-modeline-minor-modes nil))
 
 (after! emmet-mode
-  :config
   (map! :map emmet-mode-keymap
         [tab] #'+web/indent-or-yas-or-emmet-expand))
 
-(after! tagedit
-  :config
-  (tagedit-add-experimental-features))
+(after! tagedit (tagedit-add-experimental-features))
 
 (use-package! centaur-tabs
   :init
@@ -247,3 +241,20 @@
         centaur-tabs-modified-marker "⬤")
   (centaur-tabs-group-by-projectile-project))
 (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group)
+
+(add-hook! web-mode
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2))
+
+(after! web-mode
+  (set-formatter! 'html-tidy
+    '("tidy" "-q" "-indent"
+      ;;    "--tidy-mark" "no"
+      ;;    "--drop-empty-elements" "no"
+      ;;    "--show-body-only" "true"  ; don't inject html/body tags
+      "-wrap" "100"
+      "--indent-spaces" "2"
+      ;;    ("--indent-with-tabs" "%s" (if indent-tabs-mode "yes" "no"))
+      ;;    ("-xml" (memq major-mode '(nxml-mode xml-mode)))
+      )
+    :ok-statuses '(0 1)))
