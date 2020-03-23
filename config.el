@@ -90,9 +90,9 @@
 
 ;; Smartparens
 
-(add-hook 'emacs-lisp-mode-hook #'smartparens-strict-mode)
-(add-hook 'clojure-mode-hook #'smartparens-strict-mode)
-(add-hook 'scss-mode-hook #'smartparens-strict-mode)
+(add-hook! emacs-lisp-mode #'smartparens-strict-mode)
+(add-hook! clojure-mode    #'smartparens-strict-mode)
+(add-hook! scss-mode-hook  #'smartparens-strict-mode)
 (map! :after smartparens
       :map   smartparens-mode-map
       "C-<right>" #'sp-forward-slurp-sexp
@@ -111,111 +111,112 @@
 
 ;; Misc editor keybinds
 
-(defun indent-buffer ()
-  (interactive)
-  (save-excursion
-    (indent-region (point-min) (point-max))))
-(map! "C-<f8>" #'indent-buffer)
+(map! "C-<f8>"
+      (defun indent-buffer ()
+        (interactive)
+        (save-excursion
+          (indent-region (point-min) (point-max)))))
 
-(defun multi-line-just-one-space (&optional n)
-  "Multi-line version of `just-one-space': Delete all spaces and tabs
-  around point, leaving one space (or N spaces). When in clojure or
-  emacs lisp mode, re-indents the s-expression."
-  (interactive "*p")
-  (let ((orig-pos (point)))
-    (skip-chars-backward " \t\n")
-    (constrain-to-field nil orig-pos)
-    (dotimes (_ (or n 1))
-      (if (= (following-char) ?\s)
-          (forward-char 1)
-        (insert ?\s)))
-    (delete-region
-     (point)
-     (progn
-       (skip-chars-forward " \t\n")
-       (constrain-to-field nil orig-pos t))))
-  (when (or (eq major-mode 'clojure-mode)
-            (eq major-mode 'emacs-lisp-mode))
-    (indent-sexp)))
-(map! "C-SPC" #'multi-line-just-one-space)
+(map! "C-SPC"
+      (defun multi-line-just-one-space (&optional n)
+        "Multi-line version of `just-one-space': Delete all
+         spaces and tabs around point, leaving one space (or N
+         spaces). When in clojure or emacs lisp mode, re-indents
+         the s-expression."
+        (interactive "*p")
+        (let ((orig-pos (point)))
+          (skip-chars-backward " \t\n")
+          (constrain-to-field nil orig-pos)
+          (dotimes (_ (or n 1))
+            (if (= (following-char) ?\s)
+                (forward-char 1)
+              (insert ?\s)))
+          (delete-region
+           (point)
+           (progn
+             (skip-chars-forward " \t\n")
+             (constrain-to-field nil orig-pos t))))
+        (when (or (eq major-mode 'clojure-mode)
+                  (eq major-mode 'emacs-lisp-mode))
+          (indent-sexp))))
 
 
 ;; Misc hooks
 
-(defun clojure-maybe-compile-and-load-file ()
-  "Call function 'cider-load-buffer' for clojure files.
-   Meant to be used in `after-save-hook'."
-  (when (and (or (eq major-mode 'clojurec-mode) (eq major-mode 'clojure-mode))
-             ;;(not (string-match ".*\\(project\\|profiles\\)\.clj$" buffer-file-name))
-             ;;(not (string-match "^.*\.cljs$" buffer-file-name))
-             )
-    (cider-load-buffer)))
-(add-hook 'after-save-hook 'clojure-maybe-compile-and-load-file)
+(add-hook! after-save
+  (defun clojure-maybe-compile-and-load-file ()
+    "Call function 'cider-load-buffer' for clojure files.
+     Meant to be used in `after-save-hook'."
+    (when (and (or (eq major-mode 'clojurec-mode) (eq major-mode 'clojure-mode))
+               ;;(not (string-match ".*\\(project\\|profiles\\)\.clj$" buffer-file-name))
+               ;;(not (string-match "^.*\.cljs$" buffer-file-name))
+               )
+      (cider-load-buffer))))
 
 
 ;; Clojure mode
 
-(use-package! clj-refactor
-  :config
+(after! clojure-mode
+  ;; Custom clojure indentation
+  (define-clojure-indent
+    ;; compojure
+    (context 'defun)
+    (GET 'defun)
+    (POST 'defun)
+    ;; component
+    (start 'defun)
+    (stop 'defun)
+    (init 'defun)
+    (db 'defun)
+    (conn 'defun)
+    ;; datalog
+    (and-join 'defun)
+    (or-join 'defun)
+    (not-join 'defun)
+    ;; tufte
+    (tufte/p 'defun)
+    ;;re-frame
+    (rf/reg-event-db 'defun)
+    (rf/reg-event-fx 'defun)
+    (rf/reg-sub 'defun)
+    (rf/reg-fx 'defun))
+  (setq clojure-align-forms-automatically t))
+
+(after! clj-refactor
   (setq cljr-favor-prefix-notation nil))
 
-(defun clj-refactor-clojure-mode-hook ()
-  (clj-refactor-mode 1)
-  (yas-minor-mode 1) ; for adding require/use/import statements
-  ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-  (cljr-add-keybindings-with-prefix "C-c C-m"))
-(add-hook 'clojure-mode-hook #'clj-refactor-clojure-mode-hook)
+(add-hook! clojure-mode
+  (lambda ()
+    (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\|spy\\)" 1
+                                   font-lock-warning-face t)))
+    (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
 
-;; Custom clojure indentation
-(define-clojure-indent
-  ;; compojure
-  (context 'defun)
-  (GET 'defun)
-  (POST 'defun)
-  ;; component
-  (start 'defun)
-  (stop 'defun)
-  (init 'defun)
-  (db 'defun)
-  (conn 'defun)
-  ;; datalog
-  (and-join 'defun)
-  (or-join 'defun)
-  (not-join 'defun)
-  ;; tufte
-  (tufte/p 'defun)
-  ;;re-frame
-  (rf/reg-event-db 'defun)
-  (rf/reg-event-fx 'defun)
-  (rf/reg-sub 'defun)
-  (rf/reg-fx 'defun))
-
-(setq clojure-align-forms-automatically t)
-(add-hook 'clojure-mode-hook
-          (lambda ()
-            (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\|spy\\)" 1
-                                           font-lock-warning-face t)))
-            (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
+(add-hook! clojure-mode
+  (defun clj-refactor-clojure-mode-hook ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+    (cljr-add-keybindings-with-prefix "C-c C-m")))
 
 
 ;; Flycheck
 
-(use-package! flycheck-joker)
-(use-package! flycheck-clj-kondo)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
-(dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
+(use-package! flycheck-joker
+  :after clojure-mode
+  :config
+  (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
   (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
 
-(dolist (checkers '((clj-kondo-clj . clojure-joker)
-                    (clj-kondo-cljs . clojurescript-joker)
-                    (clj-kondo-cljc . clojure-joker)
-                    (clj-kondo-edn . edn-joker)))
-  (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
+  (dolist (checkers '((clj-kondo-clj . clojure-joker)
+                      (clj-kondo-cljs . clojurescript-joker)
+                      (clj-kondo-cljc . clojure-joker)
+                      (clj-kondo-edn . edn-joker)))
+    (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 (add-hook! scss-mode
   (setq flycheck-checker 'scss-stylelint
-        flycheck-stylelintrc "~/.stylelintrc.json"))
+        flycheck-stylelintrc "~/.stylelintrc.json"
+        posframe-mouse-banish nil))
 
 
 ;; Misc package configuration
@@ -239,22 +240,17 @@
         centaur-tabs-set-modified-marker t
         centaur-tabs-close-button "⨯"
         centaur-tabs-modified-marker "⬤")
-  (centaur-tabs-group-by-projectile-project))
-(map! "C-S-M-t" #'centaur-tabs-counsel-switch-group)
+  (centaur-tabs-group-by-projectile-project)
+  (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
 
-(add-hook! web-mode
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-css-indent-offset 2))
+(add-hook! (web-mode scss-mode)
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        css-indent-offset 2))
 
 (after! web-mode
   (set-formatter! 'html-tidy
     '("tidy" "-q" "-indent"
-      ;;    "--tidy-mark" "no"
-      ;;    "--drop-empty-elements" "no"
-      ;;    "--show-body-only" "true"  ; don't inject html/body tags
       "-wrap" "100"
-      "--indent-spaces" "2"
-      ;;    ("--indent-with-tabs" "%s" (if indent-tabs-mode "yes" "no"))
-      ;;    ("-xml" (memq major-mode '(nxml-mode xml-mode)))
-      )
+      "--indent-spaces" "2")
     :ok-statuses '(0 1)))
