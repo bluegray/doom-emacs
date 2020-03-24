@@ -76,6 +76,8 @@
 ;; Global keybinds
 
 (cua-mode t)
+(map! :map undo-tree-map
+      "C-y"         #'undo-tree-redo)
 
 (map! "C-S-t"         #'treemacs
       "<f2>"          #'highlight-symbol-at-point
