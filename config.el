@@ -93,12 +93,22 @@
 ;; Smartparens
 
 (add-hook! emacs-lisp-mode #'smartparens-strict-mode)
-(add-hook! clojure-mode    #'smartparens-strict-mode)
+;;(add-hook! clojure-mode    #'smartparens-strict-mode)
+(add-hook! clojure-mode :append #'turn-off-smartparens-mode)
 (add-hook! scss-mode-hook  #'smartparens-strict-mode)
 (map! :after smartparens
       :map   smartparens-mode-map
       "C-<right>" #'sp-forward-slurp-sexp
       "C-<left>"  #'sp-forward-barf-sexp)
+
+
+;;Paredit
+(use-package! paredit
+    :hook clojure-mode
+    :config
+    (map!
+      "C-<right>" #'paredit-forward-slurp-sexp
+      "C-<left>"  #'paredit-forward-barf-sexp))
 
 
 ;; Cider
@@ -182,7 +192,8 @@
     (rf/reg-event-fx 'defun)
     (rf/reg-sub 'defun)
     (rf/reg-fx 'defun))
-  (setq clojure-align-forms-automatically t))
+  (setq clojure-align-forms-automatically t)
+  (turn-off-smartparens-mode))
 
 (after! clj-refactor
   (setq cljr-favor-prefix-notation nil))
