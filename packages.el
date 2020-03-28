@@ -53,3 +53,4 @@
 (package! flycheck-joker)
 (package! highlight-symbol)
 (package! tagedit)
+(package! paredit)

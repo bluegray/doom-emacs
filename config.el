@@ -100,24 +100,39 @@
       "C-<down>"      #'+fold/open-all
       "C-S-M-<up>"    #'+fold/close-all
       "C-c C-<right>" #'tagedit-forward-slurp-tag
-      "C-c C-<left>"  #'tagedit-forward-barf-tag)
+      "C-c C-<left>"  #'tagedit-forward-barf-tag
+      "C-<f4>"        #'counsel-colors-web)
 
 
 ;; Smartparens
 
-(add-hook! emacs-lisp-mode #'smartparens-strict-mode)
-(add-hook! clojure-mode    #'smartparens-strict-mode)
-(add-hook! scss-mode-hook  #'smartparens-strict-mode)
+(add-hook! (emacs-lisp-mode scss-mode) #'smartparens-strict-mode)
 (map! :after smartparens
       :map   smartparens-mode-map
       "C-<right>" #'sp-forward-slurp-sexp
       "C-<left>"  #'sp-forward-barf-sexp)
 
 
+;;Paredit
+
+(use-package! paredit
+    :hook clojure-mode
+    :config
+    (map!
+      "C-<right>" #'paredit-forward-slurp-sexp
+      "C-<left>"  #'paredit-forward-barf-sexp))
+(add-hook! ('clojure-mode
+            'clojurec-mode
+            'clojurescript-mode)
+           #'turn-off-smartparens-mode
+           #'turn-off-smartparens-strict-mode
+           #'paredit-mode)
+
+
 ;; Cider
 
-(defun new-cider-local-repl  () (interactive) (cider-connect '(:host "localhost"  :port 9991)))
-(defun new-cider-tunnel-repl () (interactive) (cider-connect '(:host "localhost"  :port 7888)))
+(defun new-cider-local-repl  () (interactive) (cider-connect '(:host "localhost" :port 9991)))
+(defun new-cider-tunnel-repl () (interactive) (cider-connect '(:host "localhost" :port 7888)))
 (map! "<f9>"       #'new-cider-local-repl)
 (map! "S-C-M-<f9>" #'new-cider-tunnel-repl)
 (map! "<f10>"      #'cider-connect-clj&cljs)
@@ -265,6 +280,7 @@
       "-wrap" "100"
       "--indent-spaces" "2")
     :ok-statuses '(0 1)))
+
 
 ;; Change cursor color according to mode; inspired by
 ;; http://www.emacswiki.org/emacs/ChangingCursorDynamically
