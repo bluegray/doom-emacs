@@ -25,7 +25,7 @@
             :size (if (string= (getenv "COMPUTER") "mbp") 26 14))
  doom-variable-pitch-font
  (font-spec :family "Ubuntu Mono"
-            :size (if (string= (getenv "COMPUTER") "mbp") 26 14)))
+            :size (if (string= (getenv "COMPUTER") "mbp") 24 14)))
 
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
@@ -106,7 +106,9 @@
 
 ;; Smartparens
 
-(add-hook! (emacs-lisp-mode scss-mode) #'smartparens-strict-mode)
+(add-hook! scss-mode #'smartparens-strict-mode)
+(add-hook! clojure-mode #'turn-off-smartparens-mode)
+(add-hook! clojure-mode #'turn-off-smartparens-strict-mode)
 (map! :after smartparens
       :map   smartparens-mode-map
       "C-<right>" #'sp-forward-slurp-sexp
@@ -116,17 +118,13 @@
 ;;Paredit
 
 (use-package! paredit
-    :hook clojure-mode
-    :config
-    (map!
-      "C-<right>" #'paredit-forward-slurp-sexp
-      "C-<left>"  #'paredit-forward-barf-sexp))
-(add-hook! ('clojure-mode
-            'clojurec-mode
-            'clojurescript-mode)
-           #'turn-off-smartparens-mode
-           #'turn-off-smartparens-strict-mode
-           #'paredit-mode)
+  :hook clojure-mode
+  :config
+  (map!
+   "C-<right>" #'paredit-forward-slurp-sexp
+   "C-<left>"  #'paredit-forward-barf-sexp))
+(add-hook! clojure-mode #'paredit-mode)
+(add-hook! emacs-lisp-mode #'paredit-mode)
 
 
 ;; Cider
@@ -269,7 +267,7 @@
   (centaur-tabs-group-by-projectile-project)
   (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
 
-(add-hook! (web-mode scss-mode)
+(add-hook! '(web-mode scss-mode)
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
         css-indent-offset 2))
