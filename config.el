@@ -66,7 +66,6 @@
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 
 (setq whitespace-style '(face tabs tab-mark spaces space-mark trailing lines-tail))
-;;(setq +workspaces-on-switch-project-behavior nil)
 (global-whitespace-mode +1)
 
 (use-package! doom-themes
@@ -88,7 +87,7 @@
 
 ;; Global keybinds
 
-(cua-mode t)
+(cua-mode t)  ;; C-c, C-v, C-z for copy, paste, undo
 (map! :map undo-tree-map
       "C-y"         #'undo-tree-redo)
 
@@ -101,7 +100,8 @@
       "C-S-M-<up>"    #'+fold/close-all
       "C-c C-<right>" #'tagedit-forward-slurp-tag
       "C-c C-<left>"  #'tagedit-forward-barf-tag
-      "C-<f4>"        #'counsel-colors-web)
+      "C-<f4>"        #'counsel-colors-web
+      "C-S-M-w"       #'global-whitespace-mode)
 
 
 ;; Smartparens
@@ -167,6 +167,12 @@
         (when (or (eq major-mode 'clojure-mode)
                   (eq major-mode 'emacs-lisp-mode))
           (indent-sexp))))
+
+(map! "C-<f1>"
+      (defun describe-char-disable-hl-line ()
+        (interactive)
+        (hl-line-mode -1)
+        (describe-char (point))))
 
 
 ;; Misc hooks
@@ -243,6 +249,20 @@
         posframe-mouse-banish nil))
 
 
+;; Web and css configuration
+
+(setq web-mode-markup-indent-offset 2
+      web-mode-css-indent-offset 2
+      css-indent-offset 2)
+
+(after! web-mode
+  (set-formatter! 'html-tidy
+    '("tidy" "-q" "-indent"
+      "-wrap" "100"
+      "--indent-spaces" "2")
+    :ok-statuses '(0 1)))
+
+
 ;; Misc package configuration
 
 (after! doom-modeline (setq doom-modeline-minor-modes nil))
@@ -266,18 +286,6 @@
         centaur-tabs-modified-marker "⬤")
   (centaur-tabs-group-by-projectile-project)
   (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
-
-(add-hook! '(web-mode scss-mode)
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        css-indent-offset 2))
-
-(after! web-mode
-  (set-formatter! 'html-tidy
-    '("tidy" "-q" "-indent"
-      "-wrap" "100"
-      "--indent-spaces" "2")
-    :ok-statuses '(0 1)))
 
 
 ;; Change cursor color according to mode; inspired by
