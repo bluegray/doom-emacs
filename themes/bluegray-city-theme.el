@@ -77,7 +77,7 @@ determine the exact padding."
    (strings        bright-blue)
    (variables      dark-blue)
    (numbers        magenta)
-   (region         base3)
+   (region         base5)
    (error          red)
    (warning        yellow)
    (success        green)
