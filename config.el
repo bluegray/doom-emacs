@@ -217,6 +217,8 @@
   (setq clojure-align-forms-automatically t))
 
 (after! clj-refactor
+  (map! :map clj-refactor-map
+        "<f8>" (defun clean-ns () (interactive) (cljr-clean-ns)))
   (setq cljr-favor-prefix-notation nil))
 
 (add-hook! clojure-mode
