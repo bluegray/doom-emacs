@@ -70,6 +70,10 @@
 (setq-default fill-column 90)
 (setq require-final-newline t)
 
+(setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
+(setq mouse-wheel-scroll-amount '(1)) ;; mouse scroll moves 1 line at a time, instead of 5 lines
+(setq mouse-wheel-progressive-speed 10) ;; on a long mouse scroll keep scrolling by 1 line
+
 (use-package! doom-themes
   :config
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
