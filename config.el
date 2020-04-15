@@ -67,6 +67,8 @@
 
 (setq whitespace-style '(face tabs tab-mark spaces space-mark trailing lines-tail))
 (global-whitespace-mode +1)
+(setq-default fill-column 90)
+(setq require-final-newline t)
 
 (use-package! doom-themes
   :config
@@ -89,7 +91,7 @@
 
 (cua-mode t)  ;; C-c, C-v, C-z for copy, paste, undo
 (map! :map undo-tree-map
-      "C-y"         #'undo-tree-redo)
+      "C-y" #'undo-tree-redo)
 
 (map! "C-S-t"         #'+treemacs/toggle
       "<f2>"          #'highlight-symbol-at-point
@@ -101,7 +103,8 @@
       "C-c C-<right>" #'tagedit-forward-slurp-tag
       "C-c C-<left>"  #'tagedit-forward-barf-tag
       "C-<f4>"        #'counsel-colors-web
-      "C-S-M-w"       #'global-whitespace-mode)
+      "C-S-M-w"       #'global-whitespace-mode
+      "C-x w"         #'whitespace-cleanup)
 
 
 ;; Smartparens
