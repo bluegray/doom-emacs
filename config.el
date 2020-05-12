@@ -125,13 +125,16 @@
 ;;Paredit
 
 (use-package! paredit
-  :hook clojure-mode
   :config
   (map!
    "C-<right>" #'paredit-forward-slurp-sexp
    "C-<left>"  #'paredit-forward-barf-sexp))
+(autoload 'enable-paredit-mode "paredit"
+  "Turn on pseudo-structural editing of Lisp code."
+  t)
 (add-hook! clojure-mode #'paredit-mode)
 (add-hook! emacs-lisp-mode #'paredit-mode)
+(add-hook! cider-repl-mode-hook #'paredit-mode)
 
 
 ;; Cider
@@ -279,7 +282,10 @@
 
 ;; Misc package configuration
 
-(after! doom-modeline (setq doom-modeline-minor-modes nil))
+(after! doom-modeline (setq doom-modeline-minor-modes nil)
+  (setq doom-modeline-height 1)
+  (set-face-attribute 'mode-line nil :family "Noto Sans" :height 100)
+  (set-face-attribute 'mode-line-inactive nil :family "Noto Sans" :height 100))
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap

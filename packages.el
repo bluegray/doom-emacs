@@ -54,4 +54,3 @@
 (package! highlight-symbol)
 (package! tagedit)
 (package! paredit)
-;;(package! cider :pin "52dcc60cd5")
