@@ -70,7 +70,7 @@
 (setq-default fill-column 90)
 (setq require-final-newline t)
 
-(setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
+;;(setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
 (setq mouse-wheel-scroll-amount '(1)) ;; mouse scroll moves 1 line at a time, instead of 5 lines
 (setq mouse-wheel-progressive-speed 10) ;; on a long mouse scroll keep scrolling by 1 line
 
@@ -136,13 +136,18 @@
 
 ;; Cider
 
-(defun new-cider-local-repl  () (interactive) (cider-connect '(:host "localhost" :port 9991)))
-(defun new-cider-tunnel-repl () (interactive) (cider-connect '(:host "localhost" :port 7888)))
+(defun new-cider-local-repl  () (interactive)
+       (cider-connect '(:host "localhost" :port 9991)))
+(defun new-cider-tunnel-repl () (interactive)
+       (cider-connect '(:host "localhost" :port 7888)))
+(defun new-shadow-repl () (interactive)
+       (cider-connect-clj&cljs '(:host "localhost" :port 9991 :cljs-repl-type shadow)))
 (map! "<f9>"       #'new-cider-local-repl)
 (map! "S-C-M-<f9>" #'new-cider-tunnel-repl)
-(map! "<f10>"      #'cider-connect-clj&cljs)
+(map! "<f10>"      #'new-shadow-repl)
+(map! "S-<f10>"    #'cider-connect-clj&cljs)
 (map! "C-S-<f9>"   #'cider-quit)
-
+(map! "C-c C-w"    #'cider-pprint-eval-last-sexp-to-comment)
 
 ;; Misc editor keybinds
 
