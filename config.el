@@ -139,6 +139,23 @@
 
 ;; Cider
 
+(use-package! cider
+  :init
+  (setq
+   cider-print-fn 'fipp
+   cider-font-lock-dynamically t
+   cider-overlays-use-font-lock t
+   cider-result-overlay-position 'at-eol
+   cider-repl-pop-to-buffer-on-connect 'display-only
+   cider-repl-display-in-current-window nil
+   cider-repl-use-clojure-font-lock t
+   cider-use-fringe-indicators t
+   cider-print-options '(("length"       50) ("right-margin" 70)
+                         ("print-length" 50) ("width"        70))
+   cider-known-endpoints
+   '(("tunnel" "127.0.0.1" "7888")
+     ("local"  "127.0.0.1" "9991"))))
+
 (defun new-cider-local-repl  () (interactive)
        (cider-connect '(:host "localhost" :port 9991)))
 (defun new-cider-tunnel-repl () (interactive)
@@ -151,6 +168,7 @@
 (map! "S-<f10>"    #'cider-connect-clj&cljs)
 (map! "C-S-<f9>"   #'cider-quit)
 (map! "C-c C-w"    #'cider-pprint-eval-last-sexp-to-comment)
+
 
 ;; Misc editor keybinds
 
@@ -282,10 +300,12 @@
 
 ;; Misc package configuration
 
-(after! doom-modeline (setq doom-modeline-minor-modes nil)
-  (setq doom-modeline-height 1)
-  (set-face-attribute 'mode-line nil :family "Noto Sans" :height 100)
-  (set-face-attribute 'mode-line-inactive nil :family "Noto Sans" :height 100))
+(after! doom-modeline
+  (setq doom-modeline-minor-modes nil
+        doom-modeline-bar-width 5
+        doom-modeline-height 1)
+  (set-face-attribute 'mode-line          nil :family "Ubuntu Sans" :height 100)
+  (set-face-attribute 'mode-line-inactive nil :family "Ubuntu Sans" :height 90))
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap
@@ -300,13 +320,14 @@
   (setq centaur-tabs-set-icons t
         centaur-tabs-gray-out-icons 'buffer
         centaur-tabs-style "bar"
-        centaur-tabs-height 32
         centaur-tabs-set-modified-marker t
         centaur-tabs-close-button "⨯"
-        centaur-tabs-modified-marker "⬤")
+        centaur-tabs-modified-marker "⬤"
+        centaur-tabs-adjust-buffer-order t
+        centaur-tabs-cycle-scope 'tabs)
   (centaur-tabs-group-by-projectile-project)
+  (centaur-tabs-change-fonts "Ubuntu Mono" 110)
   (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
-
 
 ;; Change cursor color according to mode; inspired by
 ;; http://www.emacswiki.org/emacs/ChangingCursorDynamically

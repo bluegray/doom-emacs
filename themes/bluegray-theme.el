@@ -29,8 +29,8 @@
 ;; Please, install rainbow-mode
 ;; Colors with +x are lighter. Colors with -x are darker.
 (let ((bluegray-fg            "ghost white")
-      (bluegray-bg-1          "gray15")
-      (bluegray-bg            "gray20")
+      (bluegray-bg-1          "gray5")
+      (bluegray-bg            "gray10")
       (bluegray-bg+1          "gray40")
       (bluegray-bg+2          "gray60")
       (bluegray-hl            "#333333")
