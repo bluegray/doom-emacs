@@ -142,7 +142,7 @@
 (use-package! cider
   :init
   (setq
-   cider-print-fn 'fipp
+   ;;cider-print-fn 'fipp
    cider-font-lock-dynamically t
    cider-overlays-use-font-lock t
    cider-result-overlay-position 'at-eol
@@ -150,8 +150,8 @@
    cider-repl-display-in-current-window nil
    cider-repl-use-clojure-font-lock t
    cider-use-fringe-indicators t
-   cider-print-options '(("length"       50) ("right-margin" 70)
-                         ("print-length" 50) ("width"        70))
+   cider-print-options '(("length"       500) ("right-margin" 30)
+                         ("print-length" 500) ("width"        30))
    cider-known-endpoints
    '(("tunnel" "127.0.0.1" "7888")
      ("local"  "127.0.0.1" "9991"))))

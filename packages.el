@@ -52,6 +52,10 @@
 
 (package! flycheck-joker)
 (package! highlight-symbol)
+;; https://github.com/daimrod/highlight-sexp
+;;(package! highlight-sexp)
+;;(add-hook 'lisp-mode-hook 'highlight-sexp-mode)
+;;(add-hook 'emacs-lisp-mode-hook 'highlight-sexp-mode)
 (package! tagedit)
 (package! paredit)
 (package! cider
