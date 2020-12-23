@@ -142,7 +142,7 @@
 (use-package! cider
   :init
   (setq
-   ;;cider-print-fn 'fipp
+   cider-print-fn 'fipp
    cider-font-lock-dynamically t
    cider-overlays-use-font-lock t
    cider-result-overlay-position 'at-eol
@@ -150,8 +150,8 @@
    cider-repl-display-in-current-window nil
    cider-repl-use-clojure-font-lock t
    cider-use-fringe-indicators t
-   cider-print-options '(("length"       500) ("right-margin" 30)
-                         ("print-length" 500) ("width"        30))
+   cider-print-options '(("length"       500) ("right-margin" 80)
+                         ("print-length" 500) ("width"        80))
    cider-known-endpoints
    '(("tunnel" "127.0.0.1" "7888")
      ("local"  "127.0.0.1" "9991"))))
@@ -266,17 +266,20 @@
 
 ;; Flycheck
 
-(use-package! flycheck-joker
-  :after clojure-mode
-  :config
-  (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
-    (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
+(use-package! flycheck-clj-kondo
+  :after clojure-mode)
 
-  (dolist (checkers '((clj-kondo-clj . clojure-joker)
-                      (clj-kondo-cljs . clojurescript-joker)
-                      (clj-kondo-cljc . clojure-joker)
-                      (clj-kondo-edn . edn-joker)))
-    (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
+;; (use-package! flycheck-joker
+;;   :after clojure-mode
+;;   :config
+;;   (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
+;;     (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
+
+;;   (dolist (checkers '((clj-kondo-clj . clojure-joker)
+;;                       (clj-kondo-cljs . clojurescript-joker)
+;;                       (clj-kondo-cljc . clojure-joker)
+;;                       (clj-kondo-edn . edn-joker)))
+;;     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 (add-hook! scss-mode
   (setq flycheck-checker 'scss-stylelint

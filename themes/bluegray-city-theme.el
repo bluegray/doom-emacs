@@ -207,6 +207,8 @@ determine the exact padding."
    (rainbow-delimiters-mismatched-face :foreground "#FFFF00" :background red)
 
    (show-paren-match :foreground "#ff0000" :background "#5982a6")
+
+   (escape-glyph :foreground "#ff0000" :background "#ff0")
    )
 
   ;; --- extra variables ---------------------
