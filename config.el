@@ -21,11 +21,16 @@
 ;; font string. You generally only need these two:
 (setq
  doom-font
- (font-spec :family "Ubuntu Mono"
-            :size (if (string= (getenv "COMPUTER") "mbp") 26 14))
+ (font-spec :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
+            :size   (if (string= (getenv "COMPUTER") "mbp") 26 16))
  doom-variable-pitch-font
- (font-spec :family "Ubuntu Mono"
-            :size (if (string= (getenv "COMPUTER") "mbp") 24 14)))
+ (font-spec :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "DejaVu Sans Mono")
+            :size   (if (string= (getenv "COMPUTER") "mbp") 24 12))
+ doom-big-font
+ (font-spec :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "DejaVu Sans Mono")
+            :size   (if (string= (getenv "COMPUTER") "mbp") 30 16)))
+(after! doom-themes
+  (setq doom-themes-enable-bold t))
 
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
@@ -304,11 +309,15 @@
 ;; Misc package configuration
 
 (after! doom-modeline
-  (setq doom-modeline-minor-modes nil
+  (setq doom-modeline-minor-modes t
         doom-modeline-bar-width 5
         doom-modeline-height 1)
-  (set-face-attribute 'mode-line          nil :family "Ubuntu Sans" :height 100)
-  (set-face-attribute 'mode-line-inactive nil :family "Ubuntu Sans" :height 90))
+  (set-face-attribute 'mode-line          nil
+                      :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
+                      :height 100)
+  (set-face-attribute 'mode-line-inactive nil
+                      :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
+                      :height 100))
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap
@@ -356,3 +365,6 @@
     (set-cursor-color djcb-normal-color)
     (setq cursor-type djcb-normal-cursor-type))))
 (add-hook 'post-command-hook 'djcb-set-cursor-according-to-mode)
+
+(use-package! minions
+  :config (minions-mode 1))

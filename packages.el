@@ -62,3 +62,4 @@
   :recipe (:host github :repo "clojure-emacs/cider")
  ;; :pin "bfcf9157a970c9423fe27c5021f445b509e71280"
   )
+(package! minions)
