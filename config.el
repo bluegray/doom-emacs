@@ -19,13 +19,13 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq
- doom-font
- (font-spec :family "Ubuntu Mono"
-            :size (if (string= (getenv "COMPUTER") "mbp") 26 14))
- doom-variable-pitch-font
- (font-spec :family "Ubuntu Mono"
-            :size (if (string= (getenv "COMPUTER") "mbp") 24 14)))
+;; (setq
+;;  doom-font
+;;  (font-spec :family "Ubuntu Mono"
+;;             :size (if (string= (getenv "COMPUTER") "mbp") 26 14))
+;;  doom-variable-pitch-font
+;;  (font-spec :family "Ubuntu Mono"
+;;             :size (if (string= (getenv "COMPUTER") "mbp") 24 14)))
 
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
@@ -143,12 +143,12 @@
   :init
   (setq
    cider-print-fn 'fipp
-   cider-font-lock-dynamically t
-   cider-overlays-use-font-lock t
+   ;;cider-font-lock-dynamically t
+   ;;cider-overlays-use-font-lock t
    cider-result-overlay-position 'at-eol
    cider-repl-pop-to-buffer-on-connect 'display-only
    cider-repl-display-in-current-window nil
-   cider-repl-use-clojure-font-lock t
+   ;;cider-repl-use-clojure-font-lock t
    cider-use-fringe-indicators t
    cider-print-options '(("length"       500) ("right-margin" 80)
                          ("print-length" 500) ("width"        80))
@@ -156,17 +156,23 @@
    '(("tunnel" "127.0.0.1" "7888")
      ("local"  "127.0.0.1" "9991"))))
 
-(defun new-cider-local-repl  () (interactive)
+(defun new-cider-local-mono-repl  () (interactive)
        (cider-connect '(:host "localhost" :port 9991)))
-(defun new-cider-tunnel-repl () (interactive)
+(defun new-cider-local-chat-repl  () (interactive)
+       (cider-connect '(:host "localhost" :port 7999)))
+(defun new-cider-tunnel-mono-repl () (interactive)
        (cider-connect '(:host "localhost" :port 7888)))
-(defun new-shadow-repl () (interactive)
+(defun new-shadow-mono-repl () (interactive)
        (cider-connect-clj&cljs '(:host "localhost" :port 9991 :cljs-repl-type shadow)))
-(map! "<f9>"       #'new-cider-local-repl)
-(map! "S-C-M-<f9>" #'new-cider-tunnel-repl)
-(map! "<f10>"      #'new-shadow-repl)
-(map! "S-<f10>"    #'cider-connect-clj&cljs)
-(map! "C-S-<f9>"   #'cider-quit)
+(defun new-shadow-chat-repl () (interactive)
+       (cider-connect-clj&cljs '(:host "localhost" :port 7999 :cljs-repl-type shadow)))
+(map! "<f9>"       #'new-cider-local-mono-repl)
+(map! "S-<f9>"     #'new-shadow-mono-repl)
+(map! "S-C-M-<f9>" #'new-cider-tunnel-mono-repl)
+(map! "<f10>"      #'new-cider-local-chat-repl)
+(map! "S-<f10>"    #'new-shadow-chat-repl)
+(map! "<f11>"      #'cider-connect-clj&cljs)
+(map! "<f12>"      #'cider-quit)
 (map! "C-c C-w"    #'cider-pprint-eval-last-sexp-to-comment)
 
 
@@ -298,7 +304,10 @@
     '("tidy" "-q" "-indent"
       "-wrap" "100"
       "--indent-spaces" "2")
-    :ok-statuses '(0 1)))
+    :ok-statuses '(0 1))
+  (flycheck-add-mode 'html-tidy 'web-mode)
+  (setq web-mode-enable-current-element-highlight t)
+  (set-face-background 'web-mode-current-element-highlight-face "#666"))
 
 
 ;; Misc package configuration
@@ -307,8 +316,9 @@
   (setq doom-modeline-minor-modes nil
         doom-modeline-bar-width 5
         doom-modeline-height 1)
-  (set-face-attribute 'mode-line          nil :family "Ubuntu Sans" :height 100)
-  (set-face-attribute 'mode-line-inactive nil :family "Ubuntu Sans" :height 90))
+  ;;(set-face-attribute 'mode-line          nil :family "Ubuntu Sans" :height 100)
+  ;;(set-face-attribute 'mode-line-inactive nil :family "Ubuntu Sans" :height 90)
+  )
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap
@@ -329,7 +339,7 @@
         centaur-tabs-adjust-buffer-order t
         centaur-tabs-cycle-scope 'tabs)
   (centaur-tabs-group-by-projectile-project)
-  (centaur-tabs-change-fonts "Ubuntu Mono" 110)
+  ;;(centaur-tabs-change-fonts "Ubuntu Mono" 110)
   (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
 
 ;; Change cursor color according to mode; inspired by
