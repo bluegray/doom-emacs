@@ -148,6 +148,8 @@
   :init
   (setq
    cider-print-fn 'fipp
+   ;;cider-print-fn 'pprint
+   ;;cider-print-fn 'zprint
    ;;cider-font-lock-dynamically t
    ;;cider-overlays-use-font-lock t
    cider-result-overlay-position 'at-eol
@@ -156,7 +158,8 @@
    ;;cider-repl-use-clojure-font-lock t
    cider-use-fringe-indicators t
    cider-print-options '(("length"       500) ("right-margin" 80)
-                         ("print-length" 500) ("width"        80))
+                         ("print-length" 500) ("width"        80)
+                         ("max-length"   500) ("max-depth"     4))
    cider-known-endpoints
    '(("tunnel" "127.0.0.1" "7888")
      ("local"  "127.0.0.1" "9991"))))
@@ -189,6 +192,8 @@
         (save-excursion
           (indent-region (point-min) (point-max)))))
 
+(map! "S-C-M-<f8>" #'cider-format-buffer )
+
 (map! "C-SPC"
       (defun multi-line-just-one-space (&optional n)
         "Multi-line version of `just-one-space': Delete all
@@ -220,6 +225,9 @@
 
 
 ;; Misc hooks
+
+;; Disabled, prefer to call it manually as needed
+;;(add-hook! before-save 'cider-format-buffer t t)
 
 (add-hook! after-save
   (defun clojure-maybe-compile-and-load-file ()
@@ -280,6 +288,8 @@
 (use-package! flycheck-clj-kondo
   :after clojure-mode)
 
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
+
 ;; (use-package! flycheck-joker
 ;;   :after clojure-mode
 ;;   :config
@@ -323,10 +333,10 @@
         doom-modeline-height 1)
   (set-face-attribute 'mode-line          nil
                       :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 100)
+                      :height 95)
   (set-face-attribute 'mode-line-inactive nil
                       :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 100))
+                      :height 95))
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap
@@ -377,3 +387,9 @@
 
 (use-package! minions
   :config (minions-mode 1))
+
+;;TODO: Try this to increase performance
+(setq inhibit-compacting-font-caches t)
+
+(add-hook! json-mode
+  (setq tab-width 2))
