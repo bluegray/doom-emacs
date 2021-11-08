@@ -64,3 +64,4 @@
   )
 (package! minions)
 (package! json-mode)
+(package! impatient-mode)

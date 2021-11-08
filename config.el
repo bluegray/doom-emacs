@@ -113,7 +113,8 @@
       "C-c C-<left>"  #'tagedit-forward-barf-tag
       "C-<f4>"        #'counsel-colors-web
       "C-S-M-w"       #'global-whitespace-mode
-      "C-x w"         #'whitespace-cleanup)
+      "C-x w"         #'whitespace-cleanup
+      "C-c C-c"       #'kill-ring-save)
 
 
 ;; Smartparens
@@ -333,10 +334,13 @@
         doom-modeline-height 1)
   (set-face-attribute 'mode-line          nil
                       :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 95)
+                      :height 90)
   (set-face-attribute 'mode-line-inactive nil
                       :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 95))
+                      :height 90)
+  (doom-modeline-def-modeline 'main
+    '(bar matches buffer-info remote-host buffer-position parrot selection-info)
+    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap
@@ -393,3 +397,9 @@
 
 (add-hook! json-mode
   (setq tab-width 2))
+
+;; https://stackoverflow.com/questions/36183071/how-can-i-preview-markdown-in-emacs-in-real-time
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+  (current-buffer)))
