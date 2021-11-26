@@ -103,8 +103,8 @@
       "C-y" #'undo-tree-redo)
 
 (map! "C-S-t"         #'+treemacs/toggle
-      "<f2>"          #'highlight-symbol-at-point
-      "<f3>"          #'highlight-symbol-next
+      "<f2>"          #'highlight-symbol-at-point ;; #'hlt-highlight-symbol
+      "<f3>"          #'highlight-symbol-next     ;; #'hlt-next-highlight
       "C-M-q"         #'clojure-align
       "C-<up>"        #'+fold/toggle
       "C-<down>"      #'+fold/open-all
@@ -279,6 +279,7 @@
     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
   (defun clj-refactor-clojure-mode-hook ()
     (clj-refactor-mode 1)
+    (hl-line-mode -1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
     (cljr-add-keybindings-with-prefix "C-c C-m")))
@@ -405,3 +406,5 @@
   (current-buffer)))
 
 (add-to-list `auto-mode-alist '("\\.svg\\'" . xml-mode))
+
+(setq enable-local-variables :safe)

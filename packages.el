@@ -60,9 +60,10 @@
 (package! paredit)
 (package! cider
   :recipe (:host github :repo "clojure-emacs/cider")
- ;; :pin "bfcf9157a970c9423fe27c5021f445b509e71280"
+  ;; :pin "a89b694cc3cec0294d84bf9dbe1163ad2373e8db"
   )
 (package! minions)
 (package! json-mode)
 (package! impatient-mode)
 (package! vdiff)
+(package! highlight)
