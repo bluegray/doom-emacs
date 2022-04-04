@@ -148,6 +148,7 @@
 (use-package! cider
   :init
   (setq
+   ;;cider-print-fn 'pr
    cider-print-fn 'fipp
    ;;cider-print-fn 'pprint
    ;;cider-print-fn 'zprint
@@ -235,9 +236,7 @@
     "Call function 'cider-load-buffer' for clojure files.
      Meant to be used in `after-save-hook'."
     (when (and (or (eq major-mode 'clojurec-mode) (eq major-mode 'clojure-mode))
-               ;;(not (string-match ".*\\(project\\|profiles\\)\.clj$" buffer-file-name))
-               ;;(not (string-match "^.*\.cljs$" buffer-file-name))
-               )
+               (not (string-match "^.*\.edn$" buffer-file-name)))
       (cider-load-buffer))))
 
 

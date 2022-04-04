@@ -58,10 +58,6 @@
 ;;(add-hook 'emacs-lisp-mode-hook 'highlight-sexp-mode)
 (package! tagedit)
 (package! paredit)
-(package! cider
-  :recipe (:host github :repo "clojure-emacs/cider")
-  ;; :pin "a89b694cc3cec0294d84bf9dbe1163ad2373e8db"
-  )
 (package! minions)
 (package! json-mode)
 (package! impatient-mode)
