@@ -291,22 +291,25 @@
 
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
-;; (use-package! flycheck-joker
-;;   :after clojure-mode
-;;   :config
-;;   (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
-;;     (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
+(flycheck-define-checker scss-stylelint
+  "A SCSS syntax and style checker using stylelint.
 
-;;   (dolist (checkers '((clj-kondo-clj . clojure-joker)
-;;                       (clj-kondo-cljs . clojurescript-joker)
-;;                       (clj-kondo-cljc . clojure-joker)
-;;                       (clj-kondo-edn . edn-joker)))
-;;     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
+See URL `http://stylelint.io/'."
+  :command ("stylelint"
+            (eval flycheck-stylelint-args)
+            ;; Stylelint 14.0.0 removed the syntax option
+            ;; https://stylelint.io/migration-guide/to-14
+            ;; "--syntax" "scss"
+            (option-flag "--quiet" flycheck-stylelint-quiet)
+            (config-file "--config" flycheck-stylelintrc))
+  :standard-input t
+  :error-parser flycheck-parse-stylelint
+  :predicate flycheck-buffer-nonempty-p
+  :modes (scss-mode))
 
 (add-hook! scss-mode
   (setq flycheck-checker 'scss-stylelint
-        flycheck-stylelintrc "~/.stylelintrc.json"
-        posframe-mouse-banish nil))
+        flycheck-stylelintrc "~/.stylelintrc.json"))
 
 
 ;; Web and css configuration
