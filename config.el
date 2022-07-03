@@ -290,6 +290,35 @@
 
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
+(after! flycheck-mode
+  (flycheck-define-checker scss-stylelint-custom
+    "A SCSS syntax and style checker using stylelint.
+
+See URL `http://stylelint.io/'."
+    :command ("stylelint"
+              (eval flycheck-stylelint-args)
+              (option-flag "--quiet" flycheck-stylelint-quiet)
+              (config-file "--config" flycheck-stylelintrc))
+    :standard-input t
+    :error-parser flycheck-parse-stylelint
+    :predicate flycheck-buffer-nonempty-p
+    :modes (scss-mode))
+  (add-to-list 'flycheck-checkers 'scss-stylelint-custom))
+
+(flycheck-define-checker scss-stylelint-custom
+    "A SCSS syntax and style checker using stylelint.
+
+See URL `http://stylelint.io/'."
+    :command ("stylelint"
+              (eval flycheck-stylelint-args)
+              (option-flag "--quiet" flycheck-stylelint-quiet)
+              (config-file "--config" flycheck-stylelintrc))
+    :standard-input t
+    :error-parser flycheck-parse-stylelint
+    :predicate flycheck-buffer-nonempty-p
+    :modes (scss-mode))
+  (add-to-list 'flycheck-checkers 'scss-stylelint-custom)
+
 ;; (use-package! flycheck-joker
 ;;   :after clojure-mode
 ;;   :config
@@ -303,7 +332,7 @@
 ;;     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 (add-hook! scss-mode
-  (setq flycheck-checker 'scss-stylelint
+  (setq flycheck-checker 'scss-stylelint-custom
         flycheck-stylelintrc "~/.stylelintrc.json"
         posframe-mouse-banish nil))
 
@@ -321,8 +350,15 @@
       "--indent-spaces" "2")
     :ok-statuses '(0 1))
   (flycheck-add-mode 'html-tidy 'web-mode)
+  (flycheck-add-mode 'scss-stylelint-custom 'scss-mode)
   (setq web-mode-enable-current-element-highlight t)
   (set-face-background 'web-mode-current-element-highlight-face "#666"))
+
+
+;; js2-mode
+
+(add-hook! js2-mode
+  (setq js2-basic-offset 2))
 
 
 ;; Misc package configuration
