@@ -70,7 +70,8 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 
-(setq whitespace-style '(face tabs tab-mark spaces space-mark trailing lines-tail))
+(setq whitespace-style
+      '(face tabs tab-mark spaces space-mark trailing missing-newline-at-eof lines-tail empty))
 (global-whitespace-mode +1)
 (setq-default fill-column 90)
 (setq require-final-newline t)
@@ -103,8 +104,8 @@
       "C-y" #'undo-tree-redo)
 
 (map! "C-S-t"         #'+treemacs/toggle
-      "<f2>"          #'highlight-symbol-at-point
-      "<f3>"          #'highlight-symbol-next
+      "<f2>"          #'highlight-symbol-at-point ;; #'hlt-highlight-symbol
+      "<f3>"          #'highlight-symbol-next     ;; #'hlt-next-highlight
       "C-M-q"         #'clojure-align
       "C-<up>"        #'+fold/toggle
       "C-<down>"      #'+fold/open-all
@@ -113,7 +114,8 @@
       "C-c C-<left>"  #'tagedit-forward-barf-tag
       "C-<f4>"        #'counsel-colors-web
       "C-S-M-w"       #'global-whitespace-mode
-      "C-x w"         #'whitespace-cleanup)
+      "C-x w"         #'whitespace-cleanup
+      "C-c C-c"       #'kill-ring-save)
 
 
 ;; Smartparens
@@ -147,7 +149,9 @@
 (use-package! cider
   :init
   (setq
-   cider-print-fn 'fipp
+   ;;cider-print-fn 'pr
+   cider-print-fn 'puget
+   ;;cider-print-fn 'fipp
    ;;cider-print-fn 'pprint
    ;;cider-print-fn 'zprint
    ;;cider-font-lock-dynamically t
@@ -234,9 +238,7 @@
     "Call function 'cider-load-buffer' for clojure files.
      Meant to be used in `after-save-hook'."
     (when (and (or (eq major-mode 'clojurec-mode) (eq major-mode 'clojure-mode))
-               ;;(not (string-match ".*\\(project\\|profiles\\)\.clj$" buffer-file-name))
-               ;;(not (string-match "^.*\.cljs$" buffer-file-name))
-               )
+               (not (string-match "^.*\.edn$" buffer-file-name)))
       (cider-load-buffer))))
 
 
@@ -271,13 +273,15 @@
 (after! clj-refactor
   (map! :map clj-refactor-map
         "<f8>" (defun clean-ns () (interactive) (cljr-clean-ns)))
-  (setq cljr-favor-prefix-notation nil))
+  (setq cljr-favor-prefix-notation nil)
+  (setq cljr-insert-newline-after-require nil))
 
 (add-hook! clojure-mode
   (defun indent-on-newline ()
     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
   (defun clj-refactor-clojure-mode-hook ()
     (clj-refactor-mode 1)
+    (hl-line-mode -1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
     (cljr-add-keybindings-with-prefix "C-c C-m")))
@@ -290,49 +294,25 @@
 
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
-(after! flycheck-mode
-  (flycheck-define-checker scss-stylelint-custom
-    "A SCSS syntax and style checker using stylelint.
+;; Define new checker compatible with Stylelint 14.0.0
+(flycheck-define-checker scss-stylelint-v14
+  "A SCSS syntax and style checker using stylelint.
 
 See URL `http://stylelint.io/'."
-    :command ("stylelint"
-              (eval flycheck-stylelint-args)
-              (option-flag "--quiet" flycheck-stylelint-quiet)
-              (config-file "--config" flycheck-stylelintrc))
-    :standard-input t
-    :error-parser flycheck-parse-stylelint
-    :predicate flycheck-buffer-nonempty-p
-    :modes (scss-mode))
-  (add-to-list 'flycheck-checkers 'scss-stylelint-custom))
-
-(flycheck-define-checker scss-stylelint-custom
-    "A SCSS syntax and style checker using stylelint.
-
-See URL `http://stylelint.io/'."
-    :command ("stylelint"
-              (eval flycheck-stylelint-args)
-              (option-flag "--quiet" flycheck-stylelint-quiet)
-              (config-file "--config" flycheck-stylelintrc))
-    :standard-input t
-    :error-parser flycheck-parse-stylelint
-    :predicate flycheck-buffer-nonempty-p
-    :modes (scss-mode))
-  (add-to-list 'flycheck-checkers 'scss-stylelint-custom)
-
-;; (use-package! flycheck-joker
-;;   :after clojure-mode
-;;   :config
-;;   (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
-;;     (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
-
-;;   (dolist (checkers '((clj-kondo-clj . clojure-joker)
-;;                       (clj-kondo-cljs . clojurescript-joker)
-;;                       (clj-kondo-cljc . clojure-joker)
-;;                       (clj-kondo-edn . edn-joker)))
-;;     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
+  :command ("stylelint"
+            (eval flycheck-stylelint-args)
+            ;; Stylelint 14.0.0 removed the syntax option
+            ;; https://stylelint.io/migration-guide/to-14
+            ;; "--syntax" "scss"
+            (option-flag "--quiet" flycheck-stylelint-quiet)
+            (config-file "--config" flycheck-stylelintrc))
+  :standard-input t
+  :error-parser flycheck-parse-stylelint
+  :predicate flycheck-buffer-nonempty-p
+  :modes (scss-mode))
 
 (add-hook! scss-mode
-  (setq flycheck-checker 'scss-stylelint-custom
+  (setq flycheck-checker 'scss-stylelint-v14
         flycheck-stylelintrc "~/.stylelintrc.json"
         posframe-mouse-banish nil))
 
@@ -350,7 +330,6 @@ See URL `http://stylelint.io/'."
       "--indent-spaces" "2")
     :ok-statuses '(0 1))
   (flycheck-add-mode 'html-tidy 'web-mode)
-  (flycheck-add-mode 'scss-stylelint-custom 'scss-mode)
   (setq web-mode-enable-current-element-highlight t)
   (set-face-background 'web-mode-current-element-highlight-face "#666"))
 
@@ -369,10 +348,13 @@ See URL `http://stylelint.io/'."
         doom-modeline-height 1)
   (set-face-attribute 'mode-line          nil
                       :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 95)
+                      :height 90)
   (set-face-attribute 'mode-line-inactive nil
                       :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 95))
+                      :height 90)
+  (doom-modeline-def-modeline 'main
+    '(bar matches buffer-info remote-host buffer-position parrot selection-info)
+    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
 
 (after! emmet-mode
   (map! :map emmet-mode-keymap
@@ -429,3 +411,13 @@ See URL `http://stylelint.io/'."
 
 (add-hook! json-mode
   (setq tab-width 2))
+
+;; https://stackoverflow.com/questions/36183071/how-can-i-preview-markdown-in-emacs-in-real-time
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+  (current-buffer)))
+
+(add-to-list `auto-mode-alist '("\\.svg\\'" . xml-mode))
+
+(setq enable-local-variables :safe)
