@@ -70,7 +70,8 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 
-(setq whitespace-style '(face tabs tab-mark spaces space-mark trailing lines-tail))
+(setq whitespace-style
+      '(face tabs tab-mark spaces space-mark trailing missing-newline-at-eof lines-tail empty))
 (global-whitespace-mode +1)
 (setq-default fill-column 90)
 (setq require-final-newline t)
@@ -149,7 +150,8 @@
   :init
   (setq
    ;;cider-print-fn 'pr
-   cider-print-fn 'fipp
+   cider-print-fn 'puget
+   ;;cider-print-fn 'fipp
    ;;cider-print-fn 'pprint
    ;;cider-print-fn 'zprint
    ;;cider-font-lock-dynamically t
@@ -271,7 +273,8 @@
 (after! clj-refactor
   (map! :map clj-refactor-map
         "<f8>" (defun clean-ns () (interactive) (cljr-clean-ns)))
-  (setq cljr-favor-prefix-notation nil))
+  (setq cljr-favor-prefix-notation nil)
+  (setq cljr-insert-newline-after-require nil))
 
 (add-hook! clojure-mode
   (defun indent-on-newline ()
@@ -291,7 +294,8 @@
 
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
-(flycheck-define-checker scss-stylelint
+;; Define new checker compatible with Stylelint 14.0.0
+(flycheck-define-checker scss-stylelint-v14
   "A SCSS syntax and style checker using stylelint.
 
 See URL `http://stylelint.io/'."
@@ -308,7 +312,7 @@ See URL `http://stylelint.io/'."
   :modes (scss-mode))
 
 (add-hook! scss-mode
-  (setq flycheck-checker 'scss-stylelint
+  (setq flycheck-checker 'scss-stylelint-v14
         flycheck-stylelintrc "~/.stylelintrc.json"))
 
 
