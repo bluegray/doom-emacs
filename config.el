@@ -313,7 +313,7 @@ See URL `http://stylelint.io/'."
 
 (add-hook! scss-mode
   (setq flycheck-checker 'scss-stylelint-v14
-        flycheck-stylelintrc "~/.stylelintrc.json"
+        ;;flycheck-stylelintrc "~/.stylelintrc.json"
         posframe-mouse-banish nil))
 
 
