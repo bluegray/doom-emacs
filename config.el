@@ -194,9 +194,14 @@
       (defun indent-buffer ()
         (interactive)
         (save-excursion
-          (indent-region (point-min) (point-max)))))
+          (indent-region (point-min) (point-max)))
+        (when (or (eq major-mode 'clojure-mode)
+                  (eq major-mode 'emacs-lisp-mode))
+          (cider-format-buffer))))
 
-(map! "S-C-M-<f8>" #'cider-format-buffer )
+;; Formatting wih cljfmt via cider
+;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
+(map! "S-C-M-<f8>" #'cider-format-buffer)
 
 (map! "C-SPC"
       (defun multi-line-just-one-space (&optional n)
@@ -219,7 +224,7 @@
              (constrain-to-field nil orig-pos t))))
         (when (or (eq major-mode 'clojure-mode)
                   (eq major-mode 'emacs-lisp-mode))
-          (indent-sexp))))
+          (cider-format-defun))))
 
 (map! "C-<f1>"
       (defun describe-char-disable-hl-line ()
