@@ -117,6 +117,12 @@
       "C-x w"         #'whitespace-cleanup
       "C-c C-c"       #'kill-ring-save)
 
+(map! "C-<f1>"
+      (defun describe-char-disable-hl-line ()
+        (interactive)
+        (hl-line-mode -1)
+        (describe-char (point))))
+
 
 ;; Smartparens
 
@@ -187,9 +193,6 @@
 (map! "<f12>"      #'cider-quit)
 (map! "C-c C-w"    #'cider-pprint-eval-last-sexp-to-comment)
 
-
-;; Misc editor keybinds
-
 (map! "C-<f8>"
       (defun indent-buffer ()
         (interactive)
@@ -198,10 +201,6 @@
         (when (or (eq major-mode 'clojure-mode)
                   (eq major-mode 'emacs-lisp-mode))
           (cider-format-buffer))))
-
-;; Formatting wih cljfmt via cider
-;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
-(map! "S-C-M-<f8>" #'cider-format-buffer)
 
 (map! "C-SPC"
       (defun multi-line-just-one-space (&optional n)
@@ -226,18 +225,11 @@
                   (eq major-mode 'emacs-lisp-mode))
           (cider-format-defun))))
 
-(map! "C-<f1>"
-      (defun describe-char-disable-hl-line ()
-        (interactive)
-        (hl-line-mode -1)
-        (describe-char (point))))
+;; Formatting wih cljfmt via cider
+;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
+(map! "S-C-M-<f8>" #'cider-format-buffer)
 
-
-;; Misc hooks
-
-;; Disabled, prefer to call it manually as needed
 (add-hook! before-save 'cider-format-buffer t t)
-
 (add-hook! after-save
   (defun clojure-maybe-compile-and-load-file ()
     "Call function 'cider-load-buffer' for clojure files.
