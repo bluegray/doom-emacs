@@ -229,14 +229,21 @@
 ;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
 (map! "S-C-M-<f8>" #'cider-format-buffer)
 
-(add-hook! before-save 'cider-format-buffer t t)
-(add-hook! after-save
-  (defun clojure-maybe-compile-and-load-file ()
+(defun clojure-maybe-save-and-format ()
+  (when (and (or (eq major-mode 'clojurec-mode)
+                 (eq major-mode 'clojure-mode))
+             (not (string-match "^.*\.edn$" buffer-file-name)))
+    (cider-format-buffer)))
+(add-hook! before-save #'clojure-maybe-save-and-format)
+
+(defun clojure-maybe-compile-and-load-file ()
     "Call function 'cider-load-buffer' for clojure files.
      Meant to be used in `after-save-hook'."
-    (when (and (or (eq major-mode 'clojurec-mode) (eq major-mode 'clojure-mode))
+    (when (and (or (eq major-mode 'clojurec-mode)
+                   (eq major-mode 'clojure-mode))
                (not (string-match "^.*\.edn$" buffer-file-name)))
-      (cider-load-buffer))))
+      (cider-load-buffer)))
+(add-hook! after-save #'clojure-maybe-compile-and-load-file)
 
 
 ;; Clojure mode
