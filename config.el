@@ -236,7 +236,7 @@
 ;; Misc hooks
 
 ;; Disabled, prefer to call it manually as needed
-;;(add-hook! before-save 'cider-format-buffer t t)
+(add-hook! before-save 'cider-format-buffer t t)
 
 (add-hook! after-save
   (defun clojure-maybe-compile-and-load-file ()
@@ -361,9 +361,9 @@ See URL `http://stylelint.io/'."
     '(bar matches buffer-info remote-host buffer-position parrot selection-info)
     '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
 
-(after! emmet-mode
-  (map! :map emmet-mode-keymap
-        [tab] #'+web/indent-or-yas-or-emmet-expand))
+;; (after! emmet-mode
+;;   (map! :map emmet-mode-keymap
+;;         [tab] #'+web/indent-or-yas-or-emmet-expand))
 
 (after! tagedit (tagedit-add-experimental-features))
 
