@@ -169,7 +169,8 @@
    cider-use-fringe-indicators t
    cider-print-options '(("length"       500) ("right-margin" 80)
                          ("print-length" 500) ("width"        80)
-                         ("max-length"   500) ("max-depth"     4))
+                         ("max-length"   500) ("max-depth"     4)
+                         ("map-delimiter" ""))
    cider-known-endpoints
    '(("tunnel" "127.0.0.1" "7888")
      ("local"  "127.0.0.1" "9991"))))
@@ -227,13 +228,13 @@
 
 ;; Formatting wih cljfmt via cider
 ;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
-(map! "S-C-M-<f8>" #'cider-format-buffer)
+(map! "S-C-M-<f8>" #'lsp-format-buffer)
 
 (defun clojure-maybe-save-and-format ()
   (when (and (or (eq major-mode 'clojurec-mode)
                  (eq major-mode 'clojure-mode))
              (not (string-match "^.*\.edn$" buffer-file-name)))
-    (cider-format-buffer)))
+    (lsp-format-buffer)))
 (add-hook! before-save #'clojure-maybe-save-and-format)
 
 (defun clojure-maybe-compile-and-load-file ()
@@ -249,30 +250,8 @@
 ;; Clojure mode
 
 (after! clojure-mode
-  ;; Custom clojure indentation
-  (define-clojure-indent
-    ;; compojure
-    (context 'defun)
-    (GET 'defun)
-    (POST 'defun)
-    ;; component
-    (start 'defun)
-    (stop 'defun)
-    (init 'defun)
-    (db 'defun)
-    (conn 'defun)
-    ;; datalog
-    (and-join 'defun)
-    (or-join 'defun)
-    (not-join 'defun)
-    ;; tufte
-    (tufte/p 'defun)
-    ;;re-frame
-    (rf/reg-event-db 'defun)
-    (rf/reg-event-fx 'defun)
-    (rf/reg-sub 'defun)
-    (rf/reg-fx 'defun))
-  (setq clojure-align-forms-automatically t))
+  (setq clojure-align-forms-automatically t)
+  (map! "C-M-q" #'clojure-align))
 
 (after! clj-refactor
   (map! :map clj-refactor-map
@@ -281,6 +260,7 @@
   (setq cljr-insert-newline-after-require nil))
 
 (add-hook! clojure-mode
+  'lsp
   (defun indent-on-newline ()
     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
   (defun clj-refactor-clojure-mode-hook ()
