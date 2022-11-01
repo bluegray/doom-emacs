@@ -270,6 +270,25 @@
     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
     (cljr-add-keybindings-with-prefix "C-c C-m")))
 
+(setq lsp-enable-symbol-highlighting nil)
+(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-show-with-cursor nil)
+(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-lens-enable t)
+(setq lsp-headerline-breadcrumb-enable nil)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-sideline-show-code-actions nil)
+(setq lsp-ui-sideline-show-hover t)
+(setq lsp-ui-sideline-show-diagnostics t)
+(setq lsp-modeline-code-actions-enable nil)
+(setq lsp-diagnostics-provider :none)
+(setq lsp-eldoc-enable-hover nil)
+(setq lsp-modeline-diagnostics-enable nil)
+(setq lsp-signature-auto-activate nil)
+(setq lsp-signature-render-documentation nil)
+(setq lsp-completion-provider :none)
+(setq lsp-completion-show-detail nil)
+(setq lsp-completion-show-kind nil)
 
 ;; Flycheck
 
@@ -405,3 +424,16 @@ See URL `http://stylelint.io/'."
 (add-to-list `auto-mode-alist '("\\.svg\\'" . xml-mode))
 
 (setq enable-local-variables :safe)
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-M-q") 'clojure-align)
+    map)
+  "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
