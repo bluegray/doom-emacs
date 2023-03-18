@@ -41,7 +41,7 @@
        ;;pretty-code       ; replace bits of code with pretty symbols
        tabs              ; a tab bar for Emacs
        treemacs          ; a project drawer, like neotree but cooler
-       ;;unicode           ; extended unicode support for various languages
+       unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
@@ -90,7 +90,7 @@
        (eval +overlay)     ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
        lookup              ; navigate your code and its documentation
-       ;;lsp
+       lsp
        ;;macos             ; MacOS-specific commands
        ;;magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
@@ -105,7 +105,7 @@
        :lang
        ;;agda              ; types of types of types of types...
        ;;assembly          ; assembly for fun or debugging
-       ;;cc                ; C/C++/Obj-C madness
+       (cc +lsp)                ; C/C++/Obj-C madness
        clojure           ; java with a lisp
        ;;common-lisp       ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs

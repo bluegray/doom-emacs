@@ -76,6 +76,14 @@
 (setq-default fill-column 90)
 (setq require-final-newline t)
 
+;; Set whitespace characters here:
+;; All numbers are unicode codepoint in decimal. e.g. (insert-char 182 1)
+(setq whitespace-display-mappings
+      '((space-mark 32 [183] [46]) ; SPACE 32 「 」, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
+        (newline-mark 10 [182 10]) ; LINE FEED,
+        (tab-mark 9 [155 9] [92 9])     ; tab
+        ))
+
 ;;(setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
 (setq mouse-wheel-scroll-amount '(1)) ;; mouse scroll moves 1 line at a time, instead of 5 lines
 (setq mouse-wheel-progressive-speed 10) ;; on a long mouse scroll keep scrolling by 1 line
@@ -421,3 +429,17 @@ See URL `http://stylelint.io/'."
 (add-to-list `auto-mode-alist '("\\.svg\\'" . xml-mode))
 
 (setq enable-local-variables :safe)
+
+
+;; C++ lsp + ccls and platformio
+(setq ccls-executable "/usr/bin/ccls")
+
+;; Enable ccls for all c++ files, and platformio-mode only
+;; when needed (platformio.ini present in project root).
+(add-hook 'c++-mode-hook (lambda ()
+                           (lsp-deferred)
+                           (platformio-conditionally-enable)))
+
+(add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
+
+(setq lsp-log-io nil)

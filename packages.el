@@ -63,3 +63,4 @@
 (package! impatient-mode)
 (package! vdiff)
 (package! highlight)
+(package! platformio-mode)
