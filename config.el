@@ -420,6 +420,9 @@ See URL `http://stylelint.io/'."
 ;; C++ ccls platformio ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package! c++-mode
+   :mode "\\.ino$")
+
 (setq ccls-executable "/usr/bin/ccls")
 
 ;; Enable ccls for all c++ files, and platformio-mode only
@@ -427,8 +430,6 @@ See URL `http://stylelint.io/'."
 (add-hook 'c++-mode-hook (lambda ()
                            (lsp-deferred)
                            (platformio-conditionally-enable)))
-
-(add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
