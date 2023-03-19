@@ -333,25 +333,34 @@
 (setq lsp-use-plists t)
 (setq lsp-idle-delay 1.500)
 
-(setq lsp-enable-symbol-highlighting nil)
+(setq lsp-enable-symbol-highlighting t)
+
 (setq lsp-ui-doc-enable nil)
 (setq lsp-ui-doc-show-with-cursor nil)
 (setq lsp-ui-doc-show-with-mouse nil)
+
 (setq lsp-lens-enable t)
-(setq lsp-headerline-breadcrumb-enable nil)
-(setq lsp-ui-sideline-enable t)
+
+(setq lsp-headerline-breadcrumb-enable t)
+
+(setq lsp-ui-sideline-enable nil)
 (setq lsp-ui-sideline-show-code-actions nil)
-(setq lsp-ui-sideline-show-hover t)
+(setq lsp-ui-sideline-show-hover nil)
 (setq lsp-ui-sideline-show-diagnostics t)
+
 (setq lsp-modeline-code-actions-enable nil)
-(setq lsp-diagnostics-provider :none)
-(setq lsp-eldoc-enable-hover nil)
+(setq lsp-diagnostics-provider :auto)
+
+(setq lsp-eldoc-enable-hover t)
+
 (setq lsp-modeline-diagnostics-enable nil)
+
 (setq lsp-signature-auto-activate nil)
 (setq lsp-signature-render-documentation nil)
-(setq lsp-completion-provider :none)
-(setq lsp-completion-show-detail nil)
-(setq lsp-completion-show-kind nil)
+
+(setq lsp-completion-provider :capf)
+(setq lsp-completion-show-detail t)
+(setq lsp-completion-show-kind t)
 
 (map! "S-C-M-<f8>" #'lsp-format-buffer)
 
@@ -420,6 +429,9 @@ See URL `http://stylelint.io/'."
 ;; C++ ccls platformio ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package! c++-mode
+   :mode "\\.ino$")
+
 (setq ccls-executable "/usr/bin/ccls")
 
 ;; Enable ccls for all c++ files, and platformio-mode only
@@ -427,8 +439,6 @@ See URL `http://stylelint.io/'."
 (add-hook 'c++-mode-hook (lambda ()
                            (lsp-deferred)
                            (platformio-conditionally-enable)))
-
-(add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
