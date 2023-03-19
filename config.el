@@ -9,6 +9,9 @@
 (setq user-full-name "John Doe"
       user-mail-address "john@doe.com")
 
+(defvar ui-hidpi t "Set hidpi settings and fonts")
+(setq ui-hidpi (string= (getenv "COMPUTER") "mbp"))
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
 ;;
@@ -21,14 +24,14 @@
 ;; font string. You generally only need these two:
 (setq
  doom-font
- (font-spec :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-            :size   (if (string= (getenv "COMPUTER") "mbp") 26 16))
+ (font-spec :family (if ui-hidpi "Ubuntu Mono" "ProggyCleanTTSZ")
+            :size   (if ui-hidpi 26 16))
  doom-variable-pitch-font
- (font-spec :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "DejaVu Sans Mono")
-            :size   (if (string= (getenv "COMPUTER") "mbp") 24 12))
+ (font-spec :family (if ui-hidpi "Ubuntu Mono" "Source Code Pro")
+            :size   (if ui-hidpi 24 12))
  doom-big-font
- (font-spec :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "DejaVu Sans Mono")
-            :size   (if (string= (getenv "COMPUTER") "mbp") 30 16)))
+ (font-spec :family (if ui-hidpi "Ubuntu Mono" "Source Code Pro")
+            :size   (if ui-hidpi 30 16)))
 (after! doom-themes
   (setq doom-themes-enable-bold t))
 
@@ -103,6 +106,30 @@
   (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Doom modeline ;;
+;;;;;;;;;;;;;;;;;;;
+
+(after! doom-modeline
+  (setq doom-modeline-minor-modes t
+        doom-modeline-bar-width 5
+        doom-modeline-height 1)
+  (if (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil
+                          :family (if ui-hidpi "Source Code Pro" "ProggyCleanTTSZ")
+                          :height (if ui-hidpi 100 160)) ;; For 29+
+    (set-face-attribute 'mode-line nil
+                        :family (if ui-hidpi "Source Code Pro" "ProggyCleanTTSZ")
+                        :height (if ui-hidpi 100 160)))
+  (set-face-attribute 'mode-line-inactive nil
+                      :family (if ui-hidpi "Source Code Pro" "ProggyCleanTTSZ")
+                      :height (if ui-hidpi 100 160))
+  (doom-modeline-def-modeline 'main
+    '(bar matches buffer-info remote-host buffer-position parrot selection-info)
+    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  "))
+  (setq all-the-icons-scale-factor 1.0))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -303,6 +330,8 @@
 ;;;;;;;;;
 
 (setq lsp-log-io nil)
+(setq lsp-use-plists t)
+(setq lsp-idle-delay 1.500)
 
 (setq lsp-enable-symbol-highlighting nil)
 (setq lsp-ui-doc-enable nil)
@@ -358,6 +387,9 @@ See URL `http://stylelint.io/'."
         ;;flycheck-stylelintrc "~/.stylelintrc.json"
         posframe-mouse-banish nil))
 
+(add-to-list 'flycheck-checkers 'scss-stylelint-v14)
+(add-to-list 'flycheck-disabled-checkers 'scss-stylelint)
+
 
 ;;;;;;;;;;;;;;;;;;
 ;; HTML CSS SVG ;;
@@ -399,25 +431,6 @@ See URL `http://stylelint.io/'."
 (add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
 
 
-;;;;;;;;;;;;;;;;;;;
-;; Doom modeline ;;
-;;;;;;;;;;;;;;;;;;;
-
-(after! doom-modeline
-  (setq doom-modeline-minor-modes t
-        doom-modeline-bar-width 5
-        doom-modeline-height 1)
-  (set-face-attribute 'mode-line          nil
-                      :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 90)
-  (set-face-attribute 'mode-line-inactive nil
-                      :family (if (string= (getenv "COMPUTER") "mbp") "Ubuntu Mono" "ProggyCleanTTSZ")
-                      :height 90)
-  (doom-modeline-def-modeline 'main
-    '(bar matches buffer-info remote-host buffer-position parrot selection-info)
-    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc package configuration ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -425,7 +438,7 @@ See URL `http://stylelint.io/'."
 (setq enable-local-variables :safe)
 
 ;;TODO: Try this to increase performance
-(setq inhibit-compacting-font-caches t)
+(setq inhibit-compacting-font-caches nil)
 
 (after! tagedit (tagedit-add-experimental-features))
 
@@ -451,7 +464,7 @@ See URL `http://stylelint.io/'."
         centaur-tabs-adjust-buffer-order t
         centaur-tabs-cycle-scope 'tabs)
   (centaur-tabs-group-by-projectile-project)
-  (centaur-tabs-change-fonts "Ubuntu Mono" 110)
+  (centaur-tabs-change-fonts "Source-Code Pro" 120)
   (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
 
 ;; Change cursor color according to mode; inspired by
