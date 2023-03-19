@@ -125,6 +125,12 @@
       "C-x w"         #'whitespace-cleanup
       "C-c C-c"       #'kill-ring-save)
 
+(map! "C-<f1>"
+      (defun describe-char-disable-hl-line ()
+        (interactive)
+        (hl-line-mode -1)
+        (describe-char (point))))
+
 
 ;; Smartparens
 
@@ -171,7 +177,8 @@
    cider-use-fringe-indicators t
    cider-print-options '(("length"       500) ("right-margin" 80)
                          ("print-length" 500) ("width"        80)
-                         ("max-length"   500) ("max-depth"     4))
+                         ("max-length"   500) ("max-depth"     4)
+                         ("map-delimiter" ""))
    cider-known-endpoints
    '(("tunnel" "127.0.0.1" "7888")
      ("local"  "127.0.0.1" "9991"))))
@@ -195,16 +202,14 @@
 (map! "<f12>"      #'cider-quit)
 (map! "C-c C-w"    #'cider-pprint-eval-last-sexp-to-comment)
 
-
-;; Misc editor keybinds
-
 (map! "C-<f8>"
       (defun indent-buffer ()
         (interactive)
         (save-excursion
-          (indent-region (point-min) (point-max)))))
-
-(map! "S-C-M-<f8>" #'cider-format-buffer )
+          (indent-region (point-min) (point-max)))
+        (when (or (eq major-mode 'clojure-mode)
+                  (eq major-mode 'emacs-lisp-mode))
+          (cider-format-buffer))))
 
 (map! "C-SPC"
       (defun multi-line-just-one-space (&optional n)
@@ -227,56 +232,34 @@
              (constrain-to-field nil orig-pos t))))
         (when (or (eq major-mode 'clojure-mode)
                   (eq major-mode 'emacs-lisp-mode))
-          (indent-sexp))))
+          (cider-format-defun))))
 
-(map! "C-<f1>"
-      (defun describe-char-disable-hl-line ()
-        (interactive)
-        (hl-line-mode -1)
-        (describe-char (point))))
+;; Formatting wih cljfmt via cider
+;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
+(map! "S-C-M-<f8>" #'lsp-format-buffer)
 
+(defun clojure-maybe-save-and-format ()
+  (when (and (or (eq major-mode 'clojurec-mode)
+                 (eq major-mode 'clojure-mode))
+             (not (string-match "^.*\.edn$" buffer-file-name)))
+    (lsp-format-buffer)))
+(add-hook! before-save #'clojure-maybe-save-and-format)
 
-;; Misc hooks
-
-;; Disabled, prefer to call it manually as needed
-;;(add-hook! before-save 'cider-format-buffer t t)
-
-(add-hook! after-save
-  (defun clojure-maybe-compile-and-load-file ()
+(defun clojure-maybe-compile-and-load-file ()
     "Call function 'cider-load-buffer' for clojure files.
      Meant to be used in `after-save-hook'."
-    (when (and (or (eq major-mode 'clojurec-mode) (eq major-mode 'clojure-mode))
+    (when (and (or (eq major-mode 'clojurec-mode)
+                   (eq major-mode 'clojure-mode))
                (not (string-match "^.*\.edn$" buffer-file-name)))
-      (cider-load-buffer))))
+      (cider-load-buffer)))
+(add-hook! after-save #'clojure-maybe-compile-and-load-file)
 
 
 ;; Clojure mode
 
 (after! clojure-mode
-  ;; Custom clojure indentation
-  (define-clojure-indent
-    ;; compojure
-    (context 'defun)
-    (GET 'defun)
-    (POST 'defun)
-    ;; component
-    (start 'defun)
-    (stop 'defun)
-    (init 'defun)
-    (db 'defun)
-    (conn 'defun)
-    ;; datalog
-    (and-join 'defun)
-    (or-join 'defun)
-    (not-join 'defun)
-    ;; tufte
-    (tufte/p 'defun)
-    ;;re-frame
-    (rf/reg-event-db 'defun)
-    (rf/reg-event-fx 'defun)
-    (rf/reg-sub 'defun)
-    (rf/reg-fx 'defun))
-  (setq clojure-align-forms-automatically t))
+  (setq clojure-align-forms-automatically t)
+  (map! "C-M-q" #'clojure-align))
 
 (after! clj-refactor
   (map! :map clj-refactor-map
@@ -285,6 +268,7 @@
   (setq cljr-insert-newline-after-require nil))
 
 (add-hook! clojure-mode
+  'lsp
   (defun indent-on-newline ()
     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
   (defun clj-refactor-clojure-mode-hook ()
@@ -293,6 +277,39 @@
     (yas-minor-mode 1) ; for adding require/use/import statements
     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
     (cljr-add-keybindings-with-prefix "C-c C-m")))
+
+(setq lsp-enable-symbol-highlighting nil)
+(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-show-with-cursor nil)
+(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-lens-enable t)
+(setq lsp-headerline-breadcrumb-enable nil)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-sideline-show-code-actions nil)
+(setq lsp-ui-sideline-show-hover t)
+(setq lsp-ui-sideline-show-diagnostics t)
+(setq lsp-modeline-code-actions-enable nil)
+(setq lsp-diagnostics-provider :none)
+(setq lsp-eldoc-enable-hover nil)
+(setq lsp-modeline-diagnostics-enable nil)
+(setq lsp-signature-auto-activate nil)
+(setq lsp-signature-render-documentation nil)
+(setq lsp-completion-provider :none)
+(setq lsp-completion-show-detail nil)
+(setq lsp-completion-show-kind nil)
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-M-q") 'clojure-align)
+    map)
+  "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
 
 
 ;; Flycheck
@@ -364,9 +381,9 @@ See URL `http://stylelint.io/'."
     '(bar matches buffer-info remote-host buffer-position parrot selection-info)
     '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
 
-(after! emmet-mode
-  (map! :map emmet-mode-keymap
-        [tab] #'+web/indent-or-yas-or-emmet-expand))
+;; (after! emmet-mode
+;;   (map! :map emmet-mode-keymap
+;;         [tab] #'+web/indent-or-yas-or-emmet-expand))
 
 (after! tagedit (tagedit-add-experimental-features))
 
