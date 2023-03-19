@@ -105,7 +105,9 @@
   (doom-themes-org-config))
 
 
-;; Global keybinds
+;;;;;;;;;;;;;;;;;;;;;
+;; Global keybinds ;;
+;;;;;;;;;;;;;;;;;;;;;
 
 (cua-mode t)  ;; C-c, C-v, C-z for copy, paste, undo
 (map! :map undo-tree-map
@@ -132,7 +134,9 @@
         (describe-char (point))))
 
 
-;; Smartparens
+;;;;;;;;;;;;;;;;;
+;; Smartparens ;;
+;;;;;;;;;;;;;;;;;
 
 (add-hook! scss-mode #'smartparens-strict-mode)
 (add-hook! clojure-mode #'turn-off-smartparens-mode)
@@ -143,7 +147,9 @@
       "C-<left>"  #'sp-forward-barf-sexp)
 
 
-;;Paredit
+;;;;;;;;;;;;;
+;; Paredit ;;
+;;;;;;;;;;;;;
 
 (use-package! paredit
   :config
@@ -158,7 +164,9 @@
 (add-hook! cider-repl-mode-hook #'paredit-mode)
 
 
-;; Cider
+;;;;;;;;;;;
+;; Cider ;;
+;;;;;;;;;;;
 
 (use-package! cider
   :init
@@ -234,17 +242,6 @@
                   (eq major-mode 'emacs-lisp-mode))
           (cider-format-defun))))
 
-;; Formatting wih cljfmt via cider
-;; https://docs.cider.mx/cider/usage/misc_features.html#formatting-code-with-cljfmt
-(map! "S-C-M-<f8>" #'lsp-format-buffer)
-
-(defun clojure-maybe-save-and-format ()
-  (when (and (or (eq major-mode 'clojurec-mode)
-                 (eq major-mode 'clojure-mode))
-             (not (string-match "^.*\.edn$" buffer-file-name)))
-    (lsp-format-buffer)))
-(add-hook! before-save #'clojure-maybe-save-and-format)
-
 (defun clojure-maybe-compile-and-load-file ()
     "Call function 'cider-load-buffer' for clojure files.
      Meant to be used in `after-save-hook'."
@@ -255,7 +252,9 @@
 (add-hook! after-save #'clojure-maybe-compile-and-load-file)
 
 
-;; Clojure mode
+;;;;;;;;;;;;;;;;;;
+;; Clojure mode ;;
+;;;;;;;;;;;;;;;;;;
 
 (after! clojure-mode
   (setq clojure-align-forms-automatically t)
@@ -268,7 +267,7 @@
   (setq cljr-insert-newline-after-require nil))
 
 (add-hook! clojure-mode
-  'lsp
+  (lsp-deferred)
   (defun indent-on-newline ()
     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
   (defun clj-refactor-clojure-mode-hook ()
@@ -277,6 +276,33 @@
     (yas-minor-mode 1) ; for adding require/use/import statements
     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
     (cljr-add-keybindings-with-prefix "C-c C-m")))
+
+(defun clojure-maybe-save-and-format ()
+  (when (and (or (eq major-mode 'clojurec-mode)
+                 (eq major-mode 'clojure-mode))
+             (not (string-match "^.*\.edn$" buffer-file-name)))
+    (lsp-format-buffer)))
+(add-hook! before-save #'clojure-maybe-save-and-format)
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-M-q") 'clojure-align)
+    map)
+  "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
+
+
+;;;;;;;;;
+;; lsp ;;
+;;;;;;;;;
+
+(setq lsp-log-io nil)
 
 (setq lsp-enable-symbol-highlighting nil)
 (setq lsp-ui-doc-enable nil)
@@ -298,21 +324,12 @@
 (setq lsp-completion-show-detail nil)
 (setq lsp-completion-show-kind nil)
 
-(defvar my-keys-minor-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-M-q") 'clojure-align)
-    map)
-  "my-keys-minor-mode keymap.")
-
-(define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  :init-value t
-  :lighter " my-keys")
-
-(my-keys-minor-mode 1)
+(map! "S-C-M-<f8>" #'lsp-format-buffer)
 
 
-;; Flycheck
+;;;;;;;;;;;;;;
+;; Flycheck ;;
+;;;;;;;;;;;;;;
 
 (use-package! flycheck-clj-kondo
   :after clojure-mode)
@@ -342,7 +359,9 @@ See URL `http://stylelint.io/'."
         posframe-mouse-banish nil))
 
 
-;; Web and css configuration
+;;;;;;;;;;;;;;;;;;
+;; HTML CSS SVG ;;
+;;;;;;;;;;;;;;;;;;
 
 (setq web-mode-markup-indent-offset 2
       web-mode-css-indent-offset 2
@@ -358,14 +377,31 @@ See URL `http://stylelint.io/'."
   (setq web-mode-enable-current-element-highlight t)
   (set-face-background 'web-mode-current-element-highlight-face "#666"))
 
+(add-to-list `auto-mode-alist '("\\.svg\\'" . xml-mode))
 
-;; js2-mode
+(after! emmet-mode
+  (map! :map emmet-mode-keymap
+        [tab] #'+web/indent-or-yas-or-emmet-expand))
 
-(add-hook! js2-mode
-  (setq js2-basic-offset 2))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; C++ ccls platformio ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq ccls-executable "/usr/bin/ccls")
+
+;; Enable ccls for all c++ files, and platformio-mode only
+;; when needed (platformio.ini present in project root).
+(add-hook 'c++-mode-hook (lambda ()
+                           (lsp-deferred)
+                           (platformio-conditionally-enable)))
+
+(add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
 
 
-;; Misc package configuration
+;;;;;;;;;;;;;;;;;;;
+;; Doom modeline ;;
+;;;;;;;;;;;;;;;;;;;
 
 (after! doom-modeline
   (setq doom-modeline-minor-modes t
@@ -381,11 +417,26 @@ See URL `http://stylelint.io/'."
     '(bar matches buffer-info remote-host buffer-position parrot selection-info)
     '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
 
-;; (after! emmet-mode
-;;   (map! :map emmet-mode-keymap
-;;         [tab] #'+web/indent-or-yas-or-emmet-expand))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Misc package configuration ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq enable-local-variables :safe)
+
+;;TODO: Try this to increase performance
+(setq inhibit-compacting-font-caches t)
 
 (after! tagedit (tagedit-add-experimental-features))
+
+(use-package! minions
+  :config (minions-mode 1))
+
+(add-hook! json-mode
+  (setq tab-width 2))
+
+(add-hook! js2-mode
+  (setq js2-basic-offset 2))
 
 (use-package! centaur-tabs
   :init
@@ -428,35 +479,8 @@ See URL `http://stylelint.io/'."
     (setq cursor-type djcb-normal-cursor-type))))
 (add-hook 'post-command-hook 'djcb-set-cursor-according-to-mode)
 
-(use-package! minions
-  :config (minions-mode 1))
-
-;;TODO: Try this to increase performance
-(setq inhibit-compacting-font-caches t)
-
-(add-hook! json-mode
-  (setq tab-width 2))
-
 ;; https://stackoverflow.com/questions/36183071/how-can-i-preview-markdown-in-emacs-in-real-time
 (defun markdown-html (buffer)
   (princ (with-current-buffer buffer
-    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
-  (current-buffer)))
-
-(add-to-list `auto-mode-alist '("\\.svg\\'" . xml-mode))
-
-(setq enable-local-variables :safe)
-
-
-;; C++ lsp + ccls and platformio
-(setq ccls-executable "/usr/bin/ccls")
-
-;; Enable ccls for all c++ files, and platformio-mode only
-;; when needed (platformio.ini present in project root).
-(add-hook 'c++-mode-hook (lambda ()
-                           (lsp-deferred)
-                           (platformio-conditionally-enable)))
-
-(add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
-
-(setq lsp-log-io nil)
+           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+         (current-buffer)))
