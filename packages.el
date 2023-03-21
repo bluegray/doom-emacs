@@ -62,5 +62,6 @@
 (package! json-mode)
 (package! impatient-mode)
 (package! vdiff)
+(package! highlight)
 (package! hexrgb)
 (package! platformio-mode)
