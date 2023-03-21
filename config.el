@@ -335,18 +335,18 @@
 
 (setq lsp-enable-symbol-highlighting nil)
 
-(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-enable t)
 (setq lsp-ui-doc-show-with-cursor nil)
-(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-ui-doc-show-with-mouse t)
 
-(setq lsp-lens-enable nil)
+(setq lsp-lens-enable t)
 
 (setq lsp-headerline-breadcrumb-enable nil)
 
-(setq lsp-ui-sideline-enable nil)
+(setq lsp-ui-sideline-enable t)
 (setq lsp-ui-sideline-show-code-actions nil)
 (setq lsp-ui-sideline-show-hover nil)
-(setq lsp-ui-sideline-show-diagnostics nil)
+(setq lsp-ui-sideline-show-diagnostics t)
 
 (setq lsp-modeline-code-actions-enable nil)
 ;;(setq lsp-diagnostics-provider :flycheck)
@@ -429,7 +429,7 @@ See URL `http://stylelint.io/'."
 ;; C++ ccls platformio ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq ccls-executable "/usr/bin/ccls")
+(setq ccls-executable "/usr/local/bin/ccls")
 
 ;; Enable ccls for all c++ files, and platformio-mode only
 ;; when needed (platformio.ini present in project root).
