@@ -343,7 +343,7 @@
 
 (setq lsp-log-io nil)
 (setq lsp-use-plists t)
-(setq lsp-idle-delay 1.500)
+(setq lsp-idle-delay 0.500)
 
 (setq lsp-enable-symbol-highlighting t)
 
@@ -351,7 +351,7 @@
 (setq lsp-ui-doc-show-with-cursor nil)
 (setq lsp-ui-doc-show-with-mouse nil)
 
-(setq lsp-lens-enable t)
+(setq lsp-lens-enable nil)
 
 (setq lsp-headerline-breadcrumb-enable t)
 
@@ -363,16 +363,16 @@
 (setq lsp-modeline-code-actions-enable nil)
 (setq lsp-diagnostics-provider :auto)
 
-(setq lsp-eldoc-enable-hover t)
+(setq lsp-eldoc-enable-hover nil)
 
 (setq lsp-modeline-diagnostics-enable nil)
 
 (setq lsp-signature-auto-activate nil)
 (setq lsp-signature-render-documentation nil)
 
-(setq lsp-completion-provider :capf)
-(setq lsp-completion-show-detail t)
-(setq lsp-completion-show-kind t)
+(setq lsp-completion-provider :none)
+(setq lsp-completion-show-detail nil)
+(setq lsp-completion-show-kind nil)
 
 (map! "S-C-M-<f8>" #'lsp-format-buffer)
 
