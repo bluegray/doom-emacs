@@ -330,10 +330,10 @@
 ;;;;;;;;;
 
 (setq lsp-log-io nil)
-(setq lsp-use-plists t)
+(setq lsp-use-plists nil)
 (setq lsp-idle-delay 0.500)
 
-(setq lsp-enable-symbol-highlighting t)
+(setq lsp-enable-symbol-highlighting nil)
 
 (setq lsp-ui-doc-enable nil)
 (setq lsp-ui-doc-show-with-cursor nil)
@@ -341,15 +341,15 @@
 
 (setq lsp-lens-enable nil)
 
-(setq lsp-headerline-breadcrumb-enable t)
+(setq lsp-headerline-breadcrumb-enable nil)
 
 (setq lsp-ui-sideline-enable nil)
 (setq lsp-ui-sideline-show-code-actions nil)
 (setq lsp-ui-sideline-show-hover nil)
-(setq lsp-ui-sideline-show-diagnostics t)
+(setq lsp-ui-sideline-show-diagnostics nil)
 
 (setq lsp-modeline-code-actions-enable nil)
-(setq lsp-diagnostics-provider :auto)
+;;(setq lsp-diagnostics-provider :flycheck)
 
 (setq lsp-eldoc-enable-hover nil)
 
