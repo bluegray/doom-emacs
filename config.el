@@ -141,8 +141,8 @@
       "C-y" #'undo-tree-redo)
 
 (map! "C-S-t"         #'+treemacs/toggle
-      "<f2>"          #'highlight-symbol-at-point ;; #'hlt-highlight-symbol
-      "<f3>"          #'highlight-symbol-next     ;; #'hlt-next-highlight
+      "<f2>"          #'highlight-symbol-at-point
+      "<f3>"          #'highlight-symbol-next
       "C-M-q"         #'clojure-align
       "C-<up>"        #'+fold/toggle
       "C-<down>"      #'+fold/open-all
@@ -437,7 +437,17 @@ See URL `http://stylelint.io/'."
                            (lsp-deferred)
                            (platformio-conditionally-enable)))
 
-(add-to-list 'auto-mode-alist '("\\.ino$" . c++-mode))
+
+;;;;;;;;;;;;;
+;; hl-line ;;
+;;;;;;;;;;;;;
+
+;; To not hide symbol highlighting
+(defun hl-line-range-function ()
+  (cons
+   (+  (line-end-position))
+   (line-beginning-position 2)))
+(setq hl-line-range-function #'hl-line-range-function)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
