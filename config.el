@@ -330,7 +330,8 @@
 ;;;;;;;;;
 
 (setq lsp-log-io nil)
-(setq lsp-use-plists nil)
+;; Remember to also set 'export LSP_USE_PLISTS=true' in ENV and init.el
+(setq lsp-use-plists t)
 (setq lsp-idle-delay 0.500)
 
 (setq lsp-enable-symbol-highlighting nil)

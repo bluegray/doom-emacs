@@ -14,6 +14,9 @@
 ;;      Alternatively, press 'gd' (or 'C-c g d') on a module to browse its
 ;;      directory (for easy access to its source code).
 
+;; https://discourse.doomemacs.org/t/using-lsp-use-plists-with-rust-analyzer-stops-updating-diagnostics-on-save/2832
+(setenv "LSP_USE_PLISTS" "1")
+
 (doom! :input
        ;;chinese
        ;;japanese
