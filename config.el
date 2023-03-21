@@ -108,6 +108,19 @@
   (doom-themes-org-config))
 
 
+;;;;;;;;;;;;;
+;; hi-line ;;
+;;;;;;;;;;;;;
+
+(defun end-of-line ()
+  (cons (line-end-position) (line-beginning-position 2)))
+
+(after! hl-line
+  (set-face-attribute 'hl-line nil :inherit nil :background "black")
+  (setq global-hl-line-sticky-flag t)
+  (global-hl-line-mode 1)
+  (setq hl-line-range-function #'end-of-line))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Doom modeline ;;
 ;;;;;;;;;;;;;;;;;;;
@@ -299,7 +312,6 @@
     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
   (defun clj-refactor-clojure-mode-hook ()
     (clj-refactor-mode 1)
-    (hl-line-mode -1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
     (cljr-add-keybindings-with-prefix "C-c C-m")))
