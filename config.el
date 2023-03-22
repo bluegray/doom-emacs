@@ -115,7 +115,9 @@
 (after! doom-modeline
   (setq doom-modeline-minor-modes t
         doom-modeline-bar-width 5
-        doom-modeline-height 1)
+        doom-modeline-height 1
+        all-the-icons-scale-factor 1.0)
+  (minions-mode 1)
   (if (facep 'mode-line-active)
       (set-face-attribute 'mode-line-active nil
                           :family (if ui-hidpi "Source Code Pro" "ProggyCleanTTSZ")
@@ -128,8 +130,7 @@
                       :height (if ui-hidpi 100 160))
   (doom-modeline-def-modeline 'main
     '(bar matches buffer-info remote-host buffer-position parrot selection-info)
-    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  "))
-  (setq all-the-icons-scale-factor 1.0))
+    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -332,15 +333,15 @@
 (setq lsp-log-io nil)
 ;; Remember to also set 'export LSP_USE_PLISTS=true' in ENV and init.el
 (setq lsp-use-plists t)
-(setq lsp-idle-delay 0.500)
+(setq lsp-idle-delay 2.500)
 
 (setq lsp-enable-symbol-highlighting nil)
 
 (setq lsp-ui-doc-enable t)
-(setq lsp-ui-doc-show-with-cursor nil)
-(setq lsp-ui-doc-show-with-mouse t)
+(setq lsp-ui-doc-show-with-cursor t)
+(setq lsp-ui-doc-show-with-mouse nil)
 
-(setq lsp-lens-enable t)
+(setq lsp-lens-enable nil)
 
 (setq lsp-headerline-breadcrumb-enable nil)
 
@@ -432,11 +433,11 @@ See URL `http://stylelint.io/'."
 
 (setq ccls-executable "/usr/local/bin/ccls")
 
-;; Enable ccls for all c++ files, and platformio-mode only
-;; when needed (platformio.ini present in project root).
-(add-hook 'c++-mode-hook (lambda ()
-                           (lsp-deferred)
-                           (platformio-conditionally-enable)))
+(use-package! c++-mode
+  :mode "\\.ino\\'")
+
+(use-package! platformio-mode
+  :hook c++-mode)
 
 
 ;;;;;;;;;;;;;
@@ -461,9 +462,6 @@ See URL `http://stylelint.io/'."
 (setq inhibit-compacting-font-caches nil)
 
 (after! tagedit (tagedit-add-experimental-features))
-
-(use-package! minions
-  :config (minions-mode 1))
 
 (add-hook! json-mode
   (setq tab-width 2))
