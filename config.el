@@ -73,7 +73,7 @@
 (setq whitespace-style
       '(face tabs tab-mark spaces space-mark trailing missing-newline-at-eof lines-tail empty))
 (global-whitespace-mode +1)
-(setq-default fill-column 90)
+(setq-default fill-column 100)
 (setq require-final-newline t)
 
 ;;(setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
@@ -234,6 +234,7 @@
   (when (and (or (eq major-mode 'clojurec-mode)
                  (eq major-mode 'clojure-mode))
              (not (string-match "^.*\.edn$" buffer-file-name)))
+    (delete-trailing-whitespace)
     (lsp-format-buffer)))
 (add-hook! before-save #'clojure-maybe-save-and-format)
 
@@ -271,15 +272,15 @@
     (cljr-add-keybindings-with-prefix "C-c C-m")))
 
 (setq lsp-enable-symbol-highlighting nil)
-(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-enable t)
 (setq lsp-ui-doc-show-with-cursor nil)
-(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-ui-doc-show-with-mouse t)
 (setq lsp-lens-enable t)
 (setq lsp-headerline-breadcrumb-enable nil)
-(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-sideline-enable nil)
 (setq lsp-ui-sideline-show-code-actions nil)
-(setq lsp-ui-sideline-show-hover t)
-(setq lsp-ui-sideline-show-diagnostics t)
+(setq lsp-ui-sideline-show-hover nil)
+(setq lsp-ui-sideline-show-diagnostics nil)
 (setq lsp-modeline-code-actions-enable nil)
 (setq lsp-diagnostics-provider :none)
 (setq lsp-eldoc-enable-hover nil)
