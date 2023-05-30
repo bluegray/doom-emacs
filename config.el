@@ -347,13 +347,13 @@
 
 (setq lsp-ui-sideline-enable nil)
 (setq lsp-ui-sideline-show-code-actions nil)
-(setq lsp-ui-sideline-show-hover nil)
+(setq lsp-ui-sideline-show-hover t)
 (setq lsp-ui-sideline-show-diagnostics nil)
 
 (setq lsp-modeline-code-actions-enable nil)
 ;;(setq lsp-diagnostics-provider :flycheck)
 
-(setq lsp-eldoc-enable-hover nil)
+(setq lsp-eldoc-enable-hover t)
 
 (setq lsp-modeline-diagnostics-enable nil)
 
@@ -431,7 +431,7 @@ See URL `http://stylelint.io/'."
 ;; C++ ccls platformio ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq ccls-executable "/usr/local/bin/ccls")
+(setq ccls-executable "/usr/bin/ccls")
 
 (use-package! c++-mode
   :mode "\\.ino\\'")
@@ -474,6 +474,9 @@ See URL `http://stylelint.io/'."
 
 ;;TODO: Try this to increase performance
 (setq inhibit-compacting-font-caches nil)
+
+(use-package! vdiff
+  :config (define-key vdiff-mode-map (kbd "C-c") vdiff-mode-prefix-map))
 
 (after! tagedit (tagedit-add-experimental-features))
 
