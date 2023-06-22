@@ -372,9 +372,9 @@
 
 (setq lsp-ui-doc-enable t)
 (setq lsp-ui-doc-show-with-cursor nil)
-(setq lsp-ui-doc-show-with-mouse t)
+(setq lsp-ui-doc-show-with-mouse nil)
 
-(setq lsp-lens-enable nil)
+(setq lsp-lens-enable t)
 
 (setq lsp-headerline-breadcrumb-enable nil)
 
