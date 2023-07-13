@@ -177,10 +177,11 @@
 (map! "C-S-t"         #'+treemacs/toggle
       "<f2>"          #'highlight-symbol-at-point
       "<f3>"          #'highlight-symbol-next
-      "C-M-q"         #'clojure-align
-      "C-<up>"        #'+fold/toggle
-      "C-<down>"      #'+fold/open-all
+      "C-q"           #'clojure-align
+      "C-<up>"        #'+fold/close
+      "C-<down>"      #'+fold/open
       "C-S-M-<up>"    #'+fold/close-all
+      "C-S-M-<down>"  #'+fold/open-all
       "C-c C-<right>" #'tagedit-forward-slurp-tag
       "C-c C-<left>"  #'tagedit-forward-barf-tag
       "C-<f4>"        #'counsel-colors-web
@@ -300,6 +301,8 @@
              (skip-chars-forward " \t\n")
              (constrain-to-field nil orig-pos t))))
         (when (or (eq major-mode 'clojure-mode)
+                  (eq major-mode 'clojurec-mode)
+                  (eq major-mode 'clojurescript-mode)
                   (eq major-mode 'emacs-lisp-mode))
           (cider-format-defun))))
 
@@ -318,8 +321,7 @@
 ;;;;;;;;;;;;;;;;;;
 
 (after! clojure-mode
-  (setq clojure-align-forms-automatically t)
-  (map! "C-M-q" #'clojure-align))
+  (setq clojure-align-forms-automatically t))
 
 (after! clj-refactor
   (map! :map clj-refactor-map
@@ -327,19 +329,23 @@
   (setq cljr-favor-prefix-notation nil)
   (setq cljr-insert-newline-after-require nil))
 
-(add-hook! clojure-mode
+;; (defun indent-on-newline ()
+;;   (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
+
+(defun clojure-mode-hook ()
   (lsp-deferred)
-  (defun indent-on-newline ()
-    (local-set-key (kbd "RET") 'reindent-then-newline-and-indent))
-  (defun clj-refactor-clojure-mode-hook ()
-    (clj-refactor-mode 1)
-    (hl-line-mode -1)
-    (yas-minor-mode 1) ; for adding require/use/import statements
-    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-    (cljr-add-keybindings-with-prefix "C-c C-m")))
+  (clj-refactor-mode 1)
+  (hl-line-mode -1)
+  ;; for adding require/use/import statements
+  (yas-minor-mode 1)
+  ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+  (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+(add-hook! clojure-mode #'clojure-mode-hook)
 
 (defun clojure-maybe-save-and-format ()
   (when (and (or (eq major-mode 'clojurec-mode)
+                 (eq major-mode 'clojurescript-mode)
                  (eq major-mode 'clojure-mode))
              (not (string-match "^.*\.edn$" buffer-file-name)))
     (lsp-format-buffer)))
@@ -347,7 +353,7 @@
 
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-M-q") 'clojure-align)
+    (define-key map (kbd "C-M-q") 'lsp-format-buffer)
     map)
   "my-keys-minor-mode keymap.")
 
@@ -396,8 +402,6 @@
 (setq lsp-completion-provider :none)
 (setq lsp-completion-show-detail nil)
 (setq lsp-completion-show-kind nil)
-
-(map! "S-C-M-<f8>" #'lsp-format-buffer)
 
 
 ;;;;;;;;;;;;;;
