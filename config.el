@@ -403,6 +403,8 @@
 (setq lsp-completion-show-detail nil)
 (setq lsp-completion-show-kind nil)
 
+(setq lsp-file-watch-threshold 2000)
+
 
 ;;;;;;;;;;;;;;
 ;; Flycheck ;;
@@ -498,6 +500,7 @@ See URL `http://stylelint.io/'."
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("TAB" . 'copilot-accept-completion)
+              ("M-a" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("M-z" . 'copilot-next-completion)))
 
@@ -568,3 +571,5 @@ See URL `http://stylelint.io/'."
   (princ (with-current-buffer buffer
            (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
          (current-buffer)))
+
+(after! projectile (setq projectile-project-root-files-bottom-up (remove ".git" projectile-project-root-files-bottom-up)))
