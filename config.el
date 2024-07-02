@@ -225,6 +225,10 @@
 (add-hook! emacs-lisp-mode #'paredit-mode)
 (add-hook! cider-repl-mode-hook #'paredit-mode)
 
+(eval-after-load 'paredit
+  '(progn
+     (define-key paredit-mode-map (kbd "RET") nil)))
+
 
 ;;;;;;;;;;;
 ;; Cider ;;
@@ -304,7 +308,7 @@
                   (eq major-mode 'clojurec-mode)
                   (eq major-mode 'clojurescript-mode)
                   (eq major-mode 'emacs-lisp-mode))
-          (cider-format-defun))))
+          (lsp-format-buffer))))
 
 (defun clojure-maybe-compile-and-load-file ()
     "Call function 'cider-load-buffer' for clojure files.
@@ -453,8 +457,7 @@ See URL `http://stylelint.io/'."
   (set-formatter! 'html-tidy
     '("tidy" "-q" "-indent"
       "-wrap" "100"
-      "--indent-spaces" "2")
-    :ok-statuses '(0 1))
+      "--indent-spaces" "2"))
   (flycheck-add-mode 'html-tidy 'web-mode)
   (setq web-mode-enable-current-element-highlight t)
   (set-face-background 'web-mode-current-element-highlight-face "#666"))
@@ -531,12 +534,15 @@ See URL `http://stylelint.io/'."
   :config
   (setq centaur-tabs-set-icons t
         centaur-tabs-gray-out-icons 'buffer
-        centaur-tabs-style "bar"
+        centaur-tabs-style "wave"
         centaur-tabs-set-modified-marker t
         centaur-tabs-close-button "⨯"
         centaur-tabs-modified-marker "⬤"
-        centaur-tabs-adjust-buffer-order t
-        centaur-tabs-cycle-scope 'tabs)
+        centaur-tabs-adjust-buffer-order "right"
+        centaur-tabs-cycle-scope 'tabs
+        uniquify-separator "/"
+        uniquify-buffer-name-style 'forward
+        centaur-tabs--buffer-show-groups nil)
   (centaur-tabs-group-by-projectile-project)
   (centaur-tabs-change-fonts "Source-Code Pro" 120)
   (map! "C-S-M-t" #'centaur-tabs-counsel-switch-group))
