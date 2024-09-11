@@ -160,10 +160,7 @@
                         :height (if ui-hidpi 100 160)))
   (set-face-attribute 'mode-line-inactive nil
                       :family (if ui-hidpi "Source Code Pro" "ProggyCleanTTSZ")
-                      :height (if ui-hidpi 100 160))
-  (doom-modeline-def-modeline 'main
-    '(bar matches buffer-info remote-host buffer-position parrot selection-info)
-    '(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "  ")))
+                      :height (if ui-hidpi 100 160)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;

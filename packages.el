@@ -62,4 +62,4 @@
 (package! platformio-mode)
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
-(package! cider :pin nil)
+(package! cider)
